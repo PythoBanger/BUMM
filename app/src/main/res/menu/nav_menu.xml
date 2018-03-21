@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/homepage"
+        android:title="Homepage"></item>
+    <item android:id="@+id/meinKonto"
+        android:title="Mein Konto"></item>
+    <item android:id="@+id/warenkorb"
+        android:title="Warenkorb"></item>
+    <item android:id="@+id/meineBestellungen"
+        android:title="Meine Bestellungen"></item>
+    <item android:id="@+id/logout"
+        android:title="Abmelden"></item>
+</menu>
