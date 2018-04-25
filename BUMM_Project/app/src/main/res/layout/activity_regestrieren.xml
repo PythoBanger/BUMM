@@ -15,21 +15,13 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Vorname"
-            android:id="@+id/textView10"
-            android:layout_row="0"
-            android:layout_column="0" />
-
         <EditText
+            android:id="@+id/editTextVorname"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/editTextVorname"
+            android:layout_column="1"
             android:layout_row="0"
-            android:layout_column="1" />
+            android:inputType="textPersonName" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -41,47 +33,48 @@
             android:layout_column="0" />
 
         <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:id="@+id/editTextNachname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_column="1"
             android:layout_row="1"
-            android:layout_column="1" />
+            android:inputType="textPersonName" />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Passwort:"
             android:id="@+id/textView12"
-            android:layout_row="2"
-            android:layout_column="0" />
-
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textPassword"
-            android:ems="10"
-            android:id="@+id/editText3"
-            android:layout_row="2"
-            android:layout_column="1" />
-
-        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="passwort Wd:"
-            android:id="@+id/textView15"
-            android:layout_row="3"
-            android:layout_column="0" />
+            android:layout_column="0"
+            android:layout_row="2"
+            android:text="Username:"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <EditText
+            android:id="@+id/editTextUN"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textPassword"
+            android:layout_column="1"
+            android:layout_row="2"
             android:ems="10"
-            android:id="@+id/editText4"
+            android:inputType="text" />
+
+        <TextView
+            android:id="@+id/textView15"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="0"
             android:layout_row="3"
-            android:layout_column="1" />
+            android:text="Passwort:"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <EditText
+            android:id="@+id/editTextPW"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_column="1"
+            android:layout_row="3"
+            android:ems="10"
+            android:inputType="textPassword" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -93,11 +86,12 @@
             android:layout_column="0" />
 
         <EditText
+            android:id="@+id/editTextPlz"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/editTextPlz"
+            android:layout_column="1"
             android:layout_row="4"
-            android:layout_column="1" />
+            android:inputType="number" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -109,11 +103,12 @@
             android:layout_column="0" />
 
         <EditText
+            android:id="@+id/editTextStraße"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/editTextStraße"
+            android:layout_column="1"
             android:layout_row="5"
-            android:layout_column="1" />
+            android:inputType="textCapWords" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -125,11 +120,12 @@
             android:layout_column="0" />
 
         <EditText
+            android:id="@+id/editTextOrt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/editTextOrt"
+            android:layout_column="1"
             android:layout_row="6"
-            android:layout_column="1" />
+            android:inputType="text" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -141,22 +137,22 @@
             android:layout_column="0" />
 
         <EditText
+            android:id="@+id/editTextDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:inputType="date"
-            android:ems="10"
-            android:id="@+id/editTextDate"
+            android:layout_column="1"
             android:layout_row="10"
-            android:layout_column="1" />
+            android:ems="10"
+            android:inputType="text" />
 
         <TextView
+            android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="EMail"
-            android:id="@+id/textView2"
+            android:layout_column="0"
             android:layout_row="12"
-            android:layout_column="0" />
+            android:text="E-Mail"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <EditText
             android:layout_width="match_parent"
@@ -168,12 +164,21 @@
             android:layout_column="1" />
 
         <Button
+            android:id="@+id/buttonRegister"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Regestrieren"
-            android:id="@+id/buttonSpeichern"
+            android:layout_column="0"
             android:layout_row="15"
-            android:layout_column="0" />
+            android:text="Regestrieren" />
+
+        <TextView
+            android:id="@+id/textView10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="0"
+            android:layout_row="0"
+            android:text="Vorname"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
 
     </GridLayout>
 

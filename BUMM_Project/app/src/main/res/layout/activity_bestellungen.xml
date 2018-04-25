@@ -14,15 +14,17 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:weightSum="1">
 
         <ListView
             android:layout_width="match_parent"
             android:layout_height="395dp"
-            android:id="@+id/listView2" />
+            android:id="@+id/listView2"
+            android:layout_weight="0.90" />
 
         <Button
-            android:layout_width="140dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Stonieren"
             android:id="@+id/buttonStonieren" />

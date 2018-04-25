@@ -19,19 +19,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/editTextSuchfeld"
-            android:text="Suche.."
+            android:hint="Suche..."
             />
 
-        <ImageButton
-            android:layout_width="154dp"
+        <Button
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/imageButton"
-            android:layout_weight="0.34"></ImageButton>
+            android:text="Search"
+            android:id="@+id/button3" />
 
         <ListView
+            android:id="@+id/listView"
             android:layout_width="match_parent"
-            android:layout_height="332dp"
-            android:id="@+id/listView" />
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 

@@ -7,10 +7,18 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.Toast;
+
+import com.example.pupil.buum.Data.Customer;
+import com.example.pupil.buum.Data.Database;
+
+import java.util.ArrayList;
 
 public class BestellungenActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
-
+    private Database db = Database.newInstance();
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
     @Override
@@ -27,7 +35,26 @@ public class BestellungenActivity extends AppCompatActivity implements Navigatio
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.navigation);
         navigationView.setNavigationItemSelectedListener(this);
+
+        this.setTitle("Deine Bestellungen");
+        setUp();
     }
+
+
+    private void setUp(){
+        ArrayList<String> dummyList = new ArrayList<>();
+        dummyList.add("IPhone 10    1000€");
+        dummyList.add("Adidas T-Shirt   20€");
+        dummyList.add("Nike T-Shirt   30€");
+
+
+        ArrayAdapter<String> itemsAdapter =
+                new ArrayAdapter<String>(this, android.R.layout.simple_list_item_multiple_choice, dummyList);
+
+        ListView SearchListView = (ListView) findViewById(R.id.listView2);
+        SearchListView.setAdapter(itemsAdapter);
+    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -40,25 +67,34 @@ public class BestellungenActivity extends AppCompatActivity implements Navigatio
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        int id = item.getItemId();
+        try{
+            int id = item.getItemId();
 
-        if(id == R.id.homepage){
-            startActivity(new Intent(BestellungenActivity.this, HomepageActivity.class));
-        }
-        if(id == R.id.logout){
-            //startActivity(new Intent(HomepageActivity.this, HomepageActivity.class));
-        }
-        if(id == R.id.meinKonto){
-            startActivity(new Intent(BestellungenActivity.this, KontoActivity.class));
-        }
-        if(id == R.id.warenkorb){
-            startActivity(new Intent(BestellungenActivity.this, WarenkorbActivity.class));
-        }
-        if(id == R.id.meineBestellungen){
-            startActivity(new Intent(BestellungenActivity.this, BestellungenActivity.class));
-        }
+            if(id == R.id.homepage){
+                startActivity(new Intent(BestellungenActivity.this, HomepageActivity.class));
+            }
+            if(id == R.id.logout){
+                Customer c = db.getCurrCustomer();
+                c.setStatus("logged off");
+                db.updateCustomer(c);
 
+                Intent intent= new Intent(this, LoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+            if(id == R.id.meinKonto){
+                startActivity(new Intent(BestellungenActivity.this, KontoActivity.class));
+            }
+            if(id == R.id.warenkorb){
+                startActivity(new Intent(BestellungenActivity.this, WarenkorbActivity.class));
+            }
+            if(id == R.id.meineBestellungen){
+                startActivity(new Intent(BestellungenActivity.this, BestellungenActivity.class));
+            }
 
+        }catch (Exception ex){
+            Toast.makeText(this,"Error caused by Menu: " + ex.getMessage(),Toast.LENGTH_LONG).show();
+        }
         return false;
     }
 }
