@@ -70,9 +70,10 @@ CREATE TABLE Notification(
   typ VARCHAR(50),
   sender VARCHAR(50),
   receiver VARCHAR(50),
+  receivDate DATE,
   CONSTRAINT fk_BU2 FOREIGN KEY(sender) REFERENCES BummUser(username),
   CONSTRAINT fk_BU3 FOREIGN KEY(receiver) REFERENCES BummUser(username),
-  CONSTRAINT check_typ CHECK (typ is not null and ( typ = 'warning' or typ = 'order send' or typ='comment report' )),
+  CONSTRAINT check_typ CHECK (typ is not null and ( typ = 'warning' or typ = 'order send' or typ='comment report' or typ='article no longer for sale')),
   CONSTRAINT check_senderandrec CHECK (sender != receiver)  
 );
 
