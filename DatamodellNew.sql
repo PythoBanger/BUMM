@@ -8,6 +8,7 @@ DROP TABLE BummOrder CASCADE CONSTRAINTS;
 DROP TABLE ShoppingList CASCADE CONSTRAINTS;
 
 DROP SEQUENCE seqArticle;
+DROP SEQUENCE seqOrder;
 
 CREATE TABLE BummUser (
   username VARCHAR2(50) PRIMARY KEY,
@@ -75,6 +76,7 @@ CREATE TABLE Notification(
   CONSTRAINT check_senderandrec CHECK (sender != receiver)  
 );
 
+CREATE SEQUENCE seqOrder START WITH 1 INCREMENT BY 1;
 CREATE TABLE BummOrder( /*order not allowed as table*/
   orderId INTEGER PRIMARY KEY,
   username VARCHAR2(50),
