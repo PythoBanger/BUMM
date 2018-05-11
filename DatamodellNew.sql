@@ -30,6 +30,7 @@ CREATE TABLE BummUser (
 CREATE TABLE Category(
   curCategory VARCHAR2(50) PRIMARY KEY,
   parentCategory VARCHAR(50),
+  CONSTRAINT check_cat CHECK (curCategory is not null),
   CONSTRAINT fk_category1 FOREIGN KEY(parentCategory) REFERENCES Category(curCategory)
 );
 
