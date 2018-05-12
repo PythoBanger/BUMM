@@ -193,10 +193,7 @@ public class Database {
         conn.close();
     }
 
-    
-    
-
-    public Collection<Article> getAllArticles() throws Exception{ 
+    public Collection<Article> getAllArticles() throws Exception {
         ArrayList<Article> collArticles = new ArrayList<>();
 
         conn = createConnection();
@@ -209,11 +206,11 @@ public class Database {
         return collArticles;
     }
 
-    private Article getArticleValues(ResultSet rs) throws Exception{
-        return (new Article(rs.getInt(1),rs.getInt(5),rs.getString(2),rs.getString(3),rs.getString(6),rs.getFloat(4)));
+    private Article getArticleValues(ResultSet rs) throws Exception {
+        return (new Article(rs.getInt(1), rs.getInt(5), rs.getString(2), rs.getString(3), rs.getString(6), rs.getFloat(4)));
     }
 
-    public Article getArticle(int artNr) throws Exception{
+    public Article getArticle(int artNr) throws Exception {
         conn = createConnection();
         String select = "SELECT * FROM Article WHERE artNr=?";
         PreparedStatement stmt = conn.prepareStatement(select);
@@ -226,63 +223,140 @@ public class Database {
         conn.close();
         return foundArticle;
     }
-   
-    public void addArticle(Article newArticle) throws Exception{
+
+    public void addArticle(Article newArticle) throws Exception {
         conn = createConnection();
-    
+
         String select = "INSERT INTO Article VALUES(seqArticle.NEXTVAL,?,?,?,?,?)";
         PreparedStatement stmt = conn.prepareStatement(select);
         stmt.setString(1, newArticle.getName());
         stmt.setString(2, newArticle.getDescription());
-        stmt.setFloat(3,newArticle.getPrice());
+        stmt.setFloat(3, newArticle.getPrice());
         stmt.setInt(4, newArticle.getOnStock());
         stmt.setString(5, newArticle.getArtCategory());
         stmt.executeQuery();
         conn.close();
-    
+
     }
+
     //change when doing admin.... as decstock must be +
-    public void updateArticle(Article articleToUpdate) throws Exception{
+    public void updateArticle(Article articleToUpdate) throws Exception {
         conn = createConnection();
-    
+
         String select = "UPDATE Article SET name=?, description=?, price=?, onStock=onStock-?,"
                 + " artCategory=? WHERE artNr = ?";
         PreparedStatement stmt = conn.prepareStatement(select);
-        
+
         stmt.setString(1, articleToUpdate.getName());
         stmt.setString(2, articleToUpdate.getDescription());
-        stmt.setFloat(3,articleToUpdate.getPrice());
+        stmt.setFloat(3, articleToUpdate.getPrice());
         stmt.setInt(4, articleToUpdate.getDecStock());
         stmt.setString(5, articleToUpdate.getArtCategory());
         stmt.setInt(6, articleToUpdate.getArtNr());
         stmt.executeQuery();
         conn.close();
-    
+
     }
 
     public Collection<Article> filterArticles(String nameToFilter, String categoryName) throws Exception {
         ArrayList<Article> collArticles = new ArrayList<>();
 
         conn = createConnection();
-        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM Article ORDER BY artNr");
+        PreparedStatement stmt = conn.prepareStatement("select * from allCatWithArt where artName like ? "
+                + "   start with child = ? connect by prior child = parent order siblings by child");
+
+        stmt.setString(1, "%" + nameToFilter + "%");
+        stmt.setString(2, categoryName);
         ResultSet rs = stmt.executeQuery();
         while (rs.next()) {
-            collArticles.add(getArticleValues(rs));
+            Article a = new Article(rs.getInt("artNr"), rs.getInt("artOnStock"), rs.getString("artName"), rs.getString("artDesc"),
+                    rs.getString("child"), rs.getFloat("artPrice"));
+
+            collArticles.add(a);
         }
         conn.close();
         return collArticles;
     }
 
-    
-    public void decreaseOnStock(Article art) throws Exception{
-       conn = createConnection();
-    
+    public void decreaseOnStock(Article art) throws Exception {
+        conn = createConnection();
+
         String select = "UPDATE Article SET  onStock=onStock-?  WHERE artNr = ?";
         PreparedStatement stmt = conn.prepareStatement(select);
-        
+
         stmt.setInt(1, art.getDecStock());
         stmt.setInt(2, art.getArtNr());
         stmt.executeQuery();
         conn.close();
     }
+
+    //toDo: think how the best return should be..... wheter like now or using the arraylist ask ortner
+    public Collection<Category> getAllCategories() throws Exception {
+        ArrayList<Category> collCategories = new ArrayList<>();
+
+        conn = createConnection();
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM Category");
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            collCategories.add(new Category(rs.getString(1), rs.getString(2))); //current,parent
+        }
+        conn.close();
+        return collCategories;
+    }
+
+    public ShoppingList getShoppingList(String username) throws Exception {
+        ShoppingList sp = new ShoppingList(this.getUser(username));
+        conn = createConnection();
+        String select = "SELECT * FROM ShoppingList WHERE username=?";
+        PreparedStatement stmt = conn.prepareStatement(select);
+        stmt.setString(1, username);
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            sp.addArticle(this.getArticle(rs.getInt("artNr")));
+        }
+        conn.close();
+        return sp;
+
+    }
+
+    public void addArticleToShoppingList(String username, Article a) throws Exception {
+        conn = createConnection();
+
+        String select = "INSERT INTO ShoppingList VALUES(?,?)";
+        PreparedStatement stmt = conn.prepareStatement(select);
+        stmt.setString(1, username);
+        stmt.setInt(2, a.getArtNr());
+
+        stmt.executeQuery();
+        conn.close();
+    }
+
+    public Article getArticleFromShoppingList(String username, int artNr) throws Exception{
+        Article a = null;
+        conn = createConnection();
+        String select = "SELECT * FROM ShoppingList WHERE username=? and artNr=?";
+        PreparedStatement stmt = conn.prepareStatement(select);
+        stmt.setString(1, username);
+        stmt.setInt(2, artNr);
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            a = getArticle(rs.getInt("artNr"));
+        }
+        conn.close();
+        return a;
+    }
+
+    public void deleteArticleFromShoppingList(String username, int artNr) throws Exception {
+        conn = createConnection();
+
+        String select = "DELETE FROM ShoppingList WHERE username=? and artNr=?";
+        PreparedStatement stmt = conn.prepareStatement(select);
+        stmt.setString(1, username);
+        stmt.setInt(2, artNr);
+        stmt.executeQuery();
+        conn.close();
+    
+    }
+
+
 }

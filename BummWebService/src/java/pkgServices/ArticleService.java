@@ -65,6 +65,8 @@ public class ArticleService {
     public Collection<Article> filterArticles(@Context HttpHeaders httpHeaders) throws Exception {   
         String nameToFilter = httpHeaders.getRequestHeader("name").get(0);
         String categoryName = httpHeaders.getRequestHeader("category").get(0);
+        if(categoryName.length()==0)
+                categoryName="Alle Artikel"; //default category
         
         return db.filterArticles(nameToFilter,categoryName);
     }

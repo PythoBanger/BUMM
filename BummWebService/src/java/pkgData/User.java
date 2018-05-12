@@ -19,6 +19,7 @@ public class User {
     private LocalDate birthdate;
     private int zipCode;
     private byte[] imageData;
+    private ShoppingList shoppingList;
     
     public User() {
     }
@@ -41,6 +42,7 @@ public class User {
         this.zipCode = zipCode;
         this.imageData = imageData;
         this.status=status;
+        //this.shoppingList= new ShoppingList(this);
     }
 
     public String getUsername() {
@@ -137,6 +139,14 @@ public class User {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public ShoppingList getShoppingList() {
+        return shoppingList;
+    }
+
+    public void setShoppingList(ShoppingList shoppingList) {
+        this.shoppingList = shoppingList;
     }
 
     
