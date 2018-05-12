@@ -38,7 +38,7 @@ CREATE SEQUENCE seqArticle START WITH 1 INCREMENT BY 1;
 
 CREATE TABLE Article(
   artNr INTEGER,
-  name VARCHAR2(50), /*muss nicht eindeutig sein. es kˆnnen ja mehrere unterschiedliche z.b Iphone4 verkauft werden. */
+  name VARCHAR2(50), /*muss nicht eindeutig sein. es k√∂nnen ja mehrere unterschiedliche z.b Iphone4 verkauft werden. */
   description VARCHAR2(50),
   price FLOAT, 
   onStock INTEGER,
@@ -80,7 +80,7 @@ CREATE TABLE Notification(
 );
 
 CREATE SEQUENCE seqOrder START WITH 1 INCREMENT BY 1;
-CREATE TABLE BummOrder( /*order not allowed as table*/
+CREATE TABLE BummOrder( /*order not allowed as table .... still alitle bit buggy*/
   orderId INTEGER PRIMARY KEY,
   username VARCHAR2(50),
   artNr INTEGER,
@@ -102,11 +102,11 @@ INSERT INTO BummUser VALUES ('admin','nimda',NULL,NULL,NULL,NULL,NULL,NULL,NULL,
 
 INSERT INTO Category VALUES('Alle Artikel',NULL); 
 
-INSERT INTO Category VALUES('Technische Ger‰te','Alle Artikel'); 
+INSERT INTO Category VALUES('Technische Ger√§te','Alle Artikel'); 
 INSERT INTO Category VALUES('Kleidung','Alle Artikel');
 
-INSERT INTO Category VALUES('Handy', 'Technische Ger‰te');
-INSERT INTO Category VALUES('Laptop', 'Technische Ger‰te');
+INSERT INTO Category VALUES('Handy', 'Technische Ger√§te');
+INSERT INTO Category VALUES('Laptop', 'Technische Ger√§te');
 INSERT INTO Category VALUES('Hosen', 'Kleidung');
 INSERT INTO Category VALUES('T-Shirt', 'Kleidung');
 
