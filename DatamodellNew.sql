@@ -29,7 +29,7 @@ CREATE TABLE BummUser (
 
 CREATE TABLE Category(
   curCategory VARCHAR2(50) PRIMARY KEY,
-  parentCategory VARCHAR(50),
+  parentCategory VARCHAR2(50),
   CONSTRAINT check_cat CHECK (curCategory is not null),
   CONSTRAINT fk_category1 FOREIGN KEY(parentCategory) REFERENCES Category(curCategory)
 );
@@ -38,12 +38,13 @@ CREATE SEQUENCE seqArticle START WITH 1 INCREMENT BY 1;
 
 CREATE TABLE Article(
   artNr INTEGER,
-  name VARCHAR(50), /*muss nicht eindeutig sein. es können ja mehrere unterschiedliche z.b Iphone4 verkauft werden. */
-  description VARCHAR(50),
+  name VARCHAR2(50), /*muss nicht eindeutig sein. es können ja mehrere unterschiedliche z.b Iphone4 verkauft werden. */
+  description VARCHAR2(50),
   price FLOAT, 
   onStock INTEGER,
-  artCategory VARCHAR(50),
+  artCategory VARCHAR2(50),
   CONSTRAINT pk_article PRIMARY KEY(artNr),
+  CONSTRAINT check_onStock CHECK (onStock >-1 ), /*can be smaller than 0 article*/
   CONSTRAINT fk_artCategory FOREIGN KEY(artCategory) REFERENCES Category(curCategory) /*article darf nur in der untersten category sein*/
 );
 
@@ -68,9 +69,9 @@ CREATE TABLE Rating(
 
 
 CREATE TABLE Notification(
-  typ VARCHAR(50),
-  sender VARCHAR(50),
-  receiver VARCHAR(50),
+  typ VARCHAR2(50),
+  sender VARCHAR2(50),
+  receiver VARCHAR2(50),
   receivDate DATE,
   CONSTRAINT fk_BU2 FOREIGN KEY(sender) REFERENCES BummUser(username),
   CONSTRAINT fk_BU3 FOREIGN KEY(receiver) REFERENCES BummUser(username),
@@ -99,8 +100,10 @@ CREATE TABLE ShoppingList(
 
 INSERT INTO BummUser VALUES ('admin','nimda',NULL,NULL,NULL,NULL,NULL,NULL,NULL,'admin',NULL,'active');
 
-INSERT INTO Category VALUES('Technische Geräte',NULL); 
-INSERT INTO Category VALUES('Kleidung',NULL);
+INSERT INTO Category VALUES('Alle Artikel',NULL); 
+
+INSERT INTO Category VALUES('Technische Geräte','Alle Artikel'); 
+INSERT INTO Category VALUES('Kleidung','Alle Artikel');
 
 INSERT INTO Category VALUES('Handy', 'Technische Geräte');
 INSERT INTO Category VALUES('Laptop', 'Technische Geräte');
@@ -113,3 +116,18 @@ INSERT INTO Article VALUES(seqArticle.NEXTVAL,'overratedes Polo','Polo Shirt', 2
 INSERT INTO Article VALUES(seqArticle.NEXTVAL,'Calvon Klein Hose','Ein Calvin Klein Hose', 500,78,'Hosen');
 
 COMMIT;
+
+
+create or replace view allCatWithArt as (select c.parentcategory parent, c.curcategory child, a.NAME as artName
+       from category c  left join article a on a.ARTCATEGORY=c.CURCATEGORY
+      
+      );
+      
+     select * from allCatWithArt; 
+      
+    select lpad(' ', 2 * level - 1) || child clothes, artName
+    from allCatWithArt where artName like '%iPhone%'
+   start with child = 'Kleidung'
+   connect by prior child = parent
+   order siblings by child;
+      
