@@ -118,16 +118,17 @@ INSERT INTO Article VALUES(seqArticle.NEXTVAL,'Calvon Klein Hose','Ein Calvin Kl
 COMMIT;
 
 
-create or replace view allCatWithArt as (select c.parentcategory parent, c.curcategory child, a.NAME as artName
+create or replace view allCatWithArt as (select c.parentcategory parent, c.curcategory child, a.ARTNR as artNr, a.NAME as artName, a.DESCRIPTION as artDesc, a.PRICE as artPrice, a.ONSTOCK as artOnStock 
        from category c  left join article a on a.ARTCATEGORY=c.CURCATEGORY
       
       );
       
      select * from allCatWithArt; 
       
-    select lpad(' ', 2 * level - 1) || child clothes, artName
-    from allCatWithArt where artName like '%iPhone%'
+    select *
+    from allCatWithArt
    start with child = 'Kleidung'
    connect by prior child = parent
    order siblings by child;
       
+      select * from Category;
