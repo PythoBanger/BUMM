@@ -25,7 +25,7 @@ public class Database {
     // private static final String CONNECTSTRING = "jdbc:oracle:thin:@localhost:1521:orcl";
 
     private static final String CONNECTSTRING = "jdbc:oracle:thin:@212.152.179.117:1521:ora11g";
-    // private static final String CONNECTSTRING = "jdbc:oracle:thin:@192.168.128.152:1521:ora11g";
+  //  private static final String CONNECTSTRING = "jdbc:oracle:thin:@192.168.128.152:1521:ora11g";
     private static final String USER = "d4a10";
     private static final String PASSWD = "d4a";
     private Connection conn = null;
@@ -126,7 +126,7 @@ public class Database {
         return foundUser;
     }
 
-    //TODO: Service delete LocalDate.now() and see how to make imagePic
+    //TODO:and see how to make imagePic
     public void addUser(User newUser) throws Exception {
         conn = createConnection();
         User u = checkIfEmailIstUnique(newUser.getEmail());
@@ -174,7 +174,7 @@ public class Database {
         stmt.setString(2, userToUpdate.getFirstName());
         stmt.setString(3, userToUpdate.getLastName());
         stmt.setString(4, userToUpdate.getEmail());
-        stmt.setDate(5, Date.valueOf(userToUpdate.getBirthdate()));
+//        stmt.setDate(5, Date.valueOf(userToUpdate.getBirthdate()));
         stmt.setString(6, userToUpdate.getLocation());
         stmt.setInt(7, userToUpdate.getZipCode());
         stmt.setString(8, userToUpdate.getAddress());
@@ -331,7 +331,7 @@ public class Database {
         conn.close();
     }
 
-    public Article getArticleFromShoppingList(String username, int artNr) throws Exception{
+    public Article getArticleFromShoppingList(String username, int artNr) throws Exception {
         Article a = null;
         conn = createConnection();
         String select = "SELECT * FROM ShoppingList WHERE username=? and artNr=?";
@@ -346,6 +346,7 @@ public class Database {
         return a;
     }
 
+    //not ok....
     public void deleteArticleFromShoppingList(String username, int artNr) throws Exception {
         conn = createConnection();
 
@@ -355,8 +356,82 @@ public class Database {
         stmt.setInt(2, artNr);
         stmt.executeQuery();
         conn.close();
-    
+
     }
 
+    public Collection<Rating> getAllRatings() throws Exception {
+        ArrayList<Rating> collRatings = new ArrayList<>();
+
+        conn = createConnection();
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM Rating ORDER BY artNr,ratingDate,username");
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            collRatings.add(getRatingValues(rs));
+        }
+        conn.close();
+        return collRatings;
+    }
+
+    private Rating getRatingValues(ResultSet rs) throws Exception {
+        return (new Rating(getArticle(rs.getInt("artNr")), getUser(rs.getString("username")), rs.getDate("ratingDate").toLocalDate(), rs.getString("ratingComment"), rs.getInt("ratingValue")));
+    }
+
+    public Collection<Rating> getRatings(int artNr) throws Exception {
+        ArrayList<Rating> collRatings = new ArrayList<>();
+
+        conn = createConnection();
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM Rating WHERE artNr=? ORDER BY ratingDate, username");
+        stmt.setInt(1, artNr);
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            collRatings.add(getRatingValues(rs));
+        }
+        conn.close();
+        return collRatings;
+    }
+
+    public Rating getRating(String username, int artNr) throws Exception {
+        Rating r = null;
+
+        conn = createConnection();
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM Rating WHERE username=? and artNr=?");
+        stmt.setString(1, username);
+        stmt.setInt(2, artNr);
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            r = getRatingValues(rs);
+        }
+        conn.close();
+        return r;
+    }
+
+    //todo locadate wie bei kunde amk...
+    public void addRating(Rating newRating) throws Exception {
+        conn = createConnection();
+
+        String select = "INSERT INTO Rating VALUES(?,?,?,?,?)";
+        PreparedStatement stmt = conn.prepareStatement(select);
+        stmt.setInt(1, newRating.getRatedArticle().getArtNr());
+        stmt.setString(2, newRating.getUserWhoRated().getUsername());
+        stmt.setDate(3, Date.valueOf(LocalDate.now()));
+        stmt.setString(4, newRating.getRatingComment());
+        stmt.setInt(5, newRating.getRatingValue());
+        stmt.executeQuery();
+        conn.close();
+    }
+
+    public void updateRating(Rating ratingToUpdate) throws Exception {
+        conn = createConnection();
+
+        String select = "UPDATE Rating SET ratingComment=?, ratingValue=? WHERE artNr = ? AND username=?"; //u can't change the date as it localdate.now (date of creation)
+        PreparedStatement stmt = conn.prepareStatement(select);
+
+        stmt.setString(1, ratingToUpdate.getRatingComment());
+        stmt.setInt(2, ratingToUpdate.getRatingValue());
+        stmt.setInt(3, ratingToUpdate.getRatedArticle().getArtNr());
+        stmt.setString(4, ratingToUpdate.getUserWhoRated().getUsername());
+        stmt.executeQuery();
+        conn.close();
+    }
 
 }

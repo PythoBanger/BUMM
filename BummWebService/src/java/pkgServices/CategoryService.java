@@ -8,7 +8,6 @@ package pkgServices;
 import java.util.Collection;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -39,8 +38,8 @@ public class CategoryService {
     
      //gets all categories as a collection
     @GET
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Collection<Category> getArticles() throws Exception {   
+    @Produces({MediaType.APPLICATION_JSON})
+    public Collection<Category> getAllCategories() throws Exception {   
         return db.getAllCategories();       
     }
     

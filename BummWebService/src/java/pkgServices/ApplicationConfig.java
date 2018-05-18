@@ -31,6 +31,7 @@ public class ApplicationConfig extends Application {
     private void addRestResourceClasses(Set<Class<?>> resources) {
         resources.add(pkgServices.ArticleService.class);
         resources.add(pkgServices.CategoryService.class);
+        resources.add(pkgServices.RatingService.class);
         resources.add(pkgServices.ShoppingListService.class);
         resources.add(pkgServices.UserService.class);
     }

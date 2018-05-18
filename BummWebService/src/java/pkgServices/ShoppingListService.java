@@ -5,7 +5,6 @@
  */
 package pkgServices;
 
-import java.util.Collection;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -44,7 +43,7 @@ public class ShoppingListService {
     //default return
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public String getShoppkingCart() throws Exception {   
+    public String getShoppingCart() throws Exception {   
        return "u are visiting the shopping cart wesbervice";
     }
    

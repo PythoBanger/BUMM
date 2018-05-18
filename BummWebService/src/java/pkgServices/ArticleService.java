@@ -44,7 +44,8 @@ public class ArticleService {
     //gets all articles ordered by articleId (default)
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Collection<Article> getArticles() throws Exception {   
+    public Collection<Article> getArticles() throws Exception {  
+        System.out.println("whytf am i here");
         return db.getAllArticles();       
     }
       
@@ -89,7 +90,7 @@ public class ArticleService {
     //updates article. not finished eg admin and onstock
     @PUT
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public String updateUser(Article articleToUpdate) throws Exception{
+    public String updateArticle(Article articleToUpdate) throws Exception{
         String isUpdated="article updated";
         try{
             db.updateArticle(articleToUpdate);
