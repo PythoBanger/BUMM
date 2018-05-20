@@ -5,10 +5,12 @@
         <group>
             <file>file:/C:/Users/schueler/Desktop/POSSERVICE/BummWebService/src/java/pkgServices/RatingService.java</file>
             <file>file:/C:/Users/schueler/Desktop/POSSERVICE/BummWebService/src/java/pkgData/Category.java</file>
+            <file>file:/C:/Users/schueler/Desktop/POSSERVICE/BummWebService/src/java/pkgData/Article.java</file>
             <file>file:/C:/Users/schueler/Desktop/POSSERVICE/BummWebService/src/java/pkgData/Rating.java</file>
             <file>file:/C:/Users/schueler/Desktop/POSSERVICE/BummWebService/src/java/pkgServices/CategoryService.java</file>
             <file>file:/C:/Users/schueler/Desktop/POSSERVICE/BummWebService/src/java/pkgData/Database.java</file>
             <file>file:/C:/Users/schueler/Desktop/POSSERVICE/BummWebService/src/java/pkgData/User.java</file>
+            <file>file:/C:/Users/schueler/Desktop/POSSERVICE/BummWebService/src/java/pkgServices/ArticleService.java</file>
             <file>file:/C:/Users/schueler/Desktop/POSSERVICE/BummWebService/src/java/pkgServices/UserService.java</file>
         </group>
     </open-files>

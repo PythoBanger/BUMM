@@ -55,7 +55,7 @@ public class Database {
         ArrayList<User> collUsers = new ArrayList<>();
 
         conn = createConnection();
-        String select = "SELECT * FROM BummUser"; //as User is already taken as class
+        String select = "SELECT * FROM BummUser WHERE role = 'customer'"; //admin can only edit customers
         PreparedStatement stmt = conn.prepareStatement(select);
         ResultSet rs = stmt.executeQuery();
         while (rs.next()) {
@@ -174,7 +174,7 @@ public class Database {
         stmt.setString(2, userToUpdate.getFirstName());
         stmt.setString(3, userToUpdate.getLastName());
         stmt.setString(4, userToUpdate.getEmail());
-//        stmt.setDate(5, Date.valueOf(userToUpdate.getBirthdate()));
+        stmt.setDate(5, Date.valueOf(userToUpdate.getBirthdate()));
         stmt.setString(6, userToUpdate.getLocation());
         stmt.setInt(7, userToUpdate.getZipCode());
         stmt.setString(8, userToUpdate.getAddress());
@@ -262,7 +262,7 @@ public class Database {
         ArrayList<Article> collArticles = new ArrayList<>();
 
         conn = createConnection();
-        PreparedStatement stmt = conn.prepareStatement("select * from allCatWithArt where artName like ? "
+        PreparedStatement stmt = conn.prepareStatement("select * from allCatWithArt where upper(artName) like upper(?) "
                 + "   start with child = ? connect by prior child = parent order siblings by child");
 
         stmt.setString(1, "%" + nameToFilter + "%");
@@ -405,7 +405,7 @@ public class Database {
         return r;
     }
 
-    //todo locadate wie bei kunde amk...
+
     public void addRating(Rating newRating) throws Exception {
         conn = createConnection();
 
@@ -423,13 +423,25 @@ public class Database {
     public void updateRating(Rating ratingToUpdate) throws Exception {
         conn = createConnection();
 
-        String select = "UPDATE Rating SET ratingComment=?, ratingValue=? WHERE artNr = ? AND username=?"; //u can't change the date as it localdate.now (date of creation)
+        String select = "UPDATE Rating SET ratingComment=?, ratingValue=?, ratingDate=? WHERE artNr = ? AND username=?"; //u can't change the date as it localdate.now (date of creation)
         PreparedStatement stmt = conn.prepareStatement(select);
 
         stmt.setString(1, ratingToUpdate.getRatingComment());
         stmt.setInt(2, ratingToUpdate.getRatingValue());
-        stmt.setInt(3, ratingToUpdate.getRatedArticle().getArtNr());
-        stmt.setString(4, ratingToUpdate.getUserWhoRated().getUsername());
+        stmt.setDate(3, Date.valueOf(LocalDate.now())); //date is the date of last time edited which is currdate
+        stmt.setInt(4, ratingToUpdate.getRatedArticle().getArtNr());
+        stmt.setString(5, ratingToUpdate.getUserWhoRated().getUsername());
+        stmt.executeQuery();
+        conn.close();
+    }
+
+    public void deleteRating(Rating ratingToUpdate) throws Exception{
+        conn = createConnection();
+
+        String select = "DELETE FROM Rating WHERE artNr = ? AND username=?"; 
+        PreparedStatement stmt = conn.prepareStatement(select);
+        stmt.setInt(1, ratingToUpdate.getRatedArticle().getArtNr());
+        stmt.setString(2, ratingToUpdate.getUserWhoRated().getUsername());
         stmt.executeQuery();
         conn.close();
     }

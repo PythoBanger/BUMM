@@ -5,8 +5,11 @@
  */
 package pkgServices;
 
+import com.google.gson.Gson;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Collection;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -44,7 +47,7 @@ public class RatingService {
     //get all ratings of each article for eg. admin want too see every article to check if no bad words are..
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Collection<Rating> getUsers() throws Exception {
+    public Collection<Rating> getAllRatings() throws Exception {
         return db.getAllRatings();
     }
 
@@ -52,8 +55,8 @@ public class RatingService {
     @GET
     @Path("/{artNr}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Collection<Rating> getUser(@PathParam("artNr") int artNr) throws Exception {
-        return db.getRatings(artNr);
+    public String getRatigsOfArticle(@PathParam("artNr") int artNr) throws Exception {
+        return new Gson().toJson(db.getRatings(artNr));
     }
 
     //return specific rating of specific user and article
@@ -73,11 +76,13 @@ public class RatingService {
     @POST
     @Consumes({MediaType.APPLICATION_JSON})
     public String addNewRating(Rating newRating) throws Exception {
-        String addStatus = "add is ok";
+        String addStatus = "rating added";
       
         try {
             db.addRating(newRating);
-        } catch (Exception ex) {
+        }catch (SQLIntegrityConstraintViolationException e) {
+            addStatus = "u've already rated this article.";
+        } catch(Exception ex) {
             addStatus = ex.getMessage();
         }
 
@@ -86,15 +91,11 @@ public class RatingService {
 
     
     @PUT
-    @Path("/{artNr}/{username}")
-    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public String updateRating(@PathParam("artNr") int artNr, @PathParam("username") String username, Rating ratingToUpdate) throws Exception{
+    @Consumes({MediaType.APPLICATION_JSON})
+    public String updateRating(String rToUpdate) throws Exception{
         String isUpdated="rating updated";
-        try{
-            if(!ratingToUpdate.getUserWhoRated().getUsername().equals(username) || ratingToUpdate.getRatedArticle().getArtNr()!=artNr)
-                throw new Exception("u can only update your own articles.....");
-            
-            
+        try{         
+            Rating ratingToUpdate = new Gson().fromJson(rToUpdate,Rating.class);
             db.updateRating(ratingToUpdate);
         }catch(Exception ex){
             isUpdated=ex.getMessage();
@@ -102,5 +103,18 @@ public class RatingService {
         return isUpdated;
     }
     
+    @POST
+    @Path("/delete") //semiprof- but @DELETE wont work(gets interpretted as get) ask org
+    @Consumes({MediaType.APPLICATION_JSON})
+    public String deleteRating(String rToDelete) throws Exception{
+        String isDeleted="rating deleted";
+        try{         
+            Rating ratingToUpdate = new Gson().fromJson(rToDelete,Rating.class);
+            db.deleteRating(ratingToUpdate);
+        }catch(Exception ex){
+            isDeleted=ex.getMessage();
+        }
+        return isDeleted;
+    }
     
 }

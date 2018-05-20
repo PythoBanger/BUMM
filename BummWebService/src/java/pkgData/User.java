@@ -18,7 +18,7 @@ public class User {
     private String username, password, firstName, lastName, email, location, address, role, status;
     private LocalDate birthdate;
     private int zipCode;
-    private byte[] imageData;
+    private byte[] imageData= new byte[0];
     private ShoppingList shoppingList;
     
     public User() {

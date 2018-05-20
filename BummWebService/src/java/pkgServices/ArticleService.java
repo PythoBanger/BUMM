@@ -5,6 +5,7 @@
  */
 package pkgServices;
 
+import com.google.gson.Gson;
 import java.util.Collection;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -44,32 +45,28 @@ public class ArticleService {
     //gets all articles ordered by articleId (default)
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Collection<Article> getArticles() throws Exception {  
-        System.out.println("whytf am i here");
-        return db.getAllArticles();       
+    public String getArticles() throws Exception {  
+        return new Gson().toJson(db.getAllArticles());       
     }
       
     @GET
     @Path("/{artNr}")
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces({MediaType.APPLICATION_JSON})
     public Article getArticle(@PathParam("artNr") int artNr) throws Exception {   
         Article a= db.getArticle(artNr);
-        if(a==null)
-            throw new Exception("no article with that id found");
-        
         return a;
     }
 
     @GET
     @Path("/filter")
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces({MediaType.APPLICATION_JSON})
     public Collection<Article> filterArticles(@Context HttpHeaders httpHeaders) throws Exception {   
         String nameToFilter = httpHeaders.getRequestHeader("name").get(0);
         String categoryName = httpHeaders.getRequestHeader("category").get(0);
         if(categoryName.length()==0)
                 categoryName="Alle Artikel"; //default category
         
-        return db.filterArticles(nameToFilter,categoryName);
+       return db.filterArticles(nameToFilter,categoryName);
     }
 
    

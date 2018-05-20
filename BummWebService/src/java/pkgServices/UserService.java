@@ -10,6 +10,8 @@ import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -57,37 +59,39 @@ public class UserService {
     @GET
     @Path("/{username}")
     @Produces({MediaType.APPLICATION_JSON})
-    public User getUser(@PathParam("username") String username) throws Exception {
+    public String getUser(@PathParam("username") String username) throws Exception {
         User u = db.getUser(username);
         if (u == null) {
             throw new Exception("no user with that id found");
         }
 
-        return u;
+        return new Gson().toJson(u);
     }
 
     @POST
     @Path("/login")
     @Consumes({MediaType.APPLICATION_JSON})
-    public User login(User loginData) throws Exception {
+    public String login(User loginData) throws Exception {
         User u = db.getUser(loginData.getUsername(), loginData.getPassword());
         if (u == null) {
-            throw new Exception("user with un and pw not found..");
+            return null;
         }
-        return u;
+        return new Gson().toJson(u,User.class);
+
     }
 
+    
     @POST
     @Consumes({MediaType.APPLICATION_JSON})
     public String addNewUser(String newUser) throws Exception {
-        String isAdded = "new user added";
+        String isAdded = "register ok";
         Gson gson = new Gson();
         User newU = gson.fromJson(newUser, User.class);
 
         try {
             db.addUser(newU);
         } catch (SQLIntegrityConstraintViolationException e) {
-            isAdded="user already exists";
+            isAdded = "user already exists";
         } catch (Exception ex) {
             isAdded = ex.getMessage();
         }
@@ -97,11 +101,10 @@ public class UserService {
     //updates user
     @PUT
     @Consumes({MediaType.APPLICATION_JSON})
-    public String updateUser(User userToUpdate) throws Exception {
+    public String updateUser(String userToUpdate) throws Exception {
         String isUpdated = "user updated";
         try {
-//            userToUpdate.setBirthdate(LocalDate.now());
-            db.updateUser(userToUpdate);
+            db.updateUser(new Gson().fromJson(userToUpdate, User.class));
         } catch (Exception ex) {
             isUpdated = ex.getMessage();
         }
