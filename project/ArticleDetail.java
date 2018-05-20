@@ -176,8 +176,8 @@ public class ArticleDetail extends AppCompatActivity implements AdapterView.OnIt
                 fillList(db.getRatingOfArticle(artNr));
                 Toast.makeText(this,":" +s,Toast.LENGTH_LONG).show();
             }else if(v.getId()==R.id.button2){
-                db.addArticleToList("username2",db.getArticle(artNr));
-
+                String s = db.deleteArticleFromList("username2",db.getArticle(artNr));
+                Toast.makeText(this,"erg: "+s,Toast.LENGTH_LONG).show();
             }
         }catch(Exception ex) {
             Toast.makeText(this,"unknown error::" +ex.getMessage(),Toast.LENGTH_LONG).show();

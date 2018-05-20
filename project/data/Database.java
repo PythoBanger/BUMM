@@ -207,7 +207,7 @@ public class Database {
         return res;
     }
 
-    //semi prof: bc post (delete request does not work)s
+    //semi prof: bc post (delete request does not work) ask org
     public String deleteRating(Rating r) throws Exception {
         Gson gson = new Gson();
         controller = new ControllerSync(url);
@@ -225,6 +225,41 @@ public class Database {
         return res;
     }
 
-    public void addArticleToList(String username, Article article) throws Exception{
+    public String addArticleToList(String username, Article article) throws Exception{
+        Gson gson = new Gson();
+        controller = new ControllerSync(url);
+
+        String strArticle = gson.toJson(article);
+
+        String paras[] = new String[3];
+        paras[0] = "ADDARTICLETOLIST";
+        paras[1] = strArticle;
+        paras[2]= username;
+        controller.execute(paras);
+        String res=  controller.get();
+        if(!res.equals("article to list added")) //semi-prof todo: work with response for eg
+            throw new Exception(res);
+
+        return res;
     }
+
+    public String deleteArticleFromList(String username, Article article) throws Exception{
+        Gson gson = new Gson();
+        controller = new ControllerSync(url);
+
+        String strArticle = gson.toJson(article);
+
+        String paras[] = new String[3];
+        paras[0] = "DELETEARTICLEFROMLIST";
+        paras[1] = strArticle;
+        paras[2]= username;
+        controller.execute(paras);
+        String res=  controller.get();
+        if(!res.equals("article from list deleted")) //semi-prof todo: work with return response object for eg
+            throw new Exception(res);
+
+        return res;
+    }
+
+
 }

@@ -121,7 +121,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener,A
                 byteArray = stream.toByteArray();
                 bmp.recycle();*/
 
-                System.out.println("njknk");
             } catch (Exception e) {
                 Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show();
             }

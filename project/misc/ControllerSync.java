@@ -86,7 +86,12 @@ public class ControllerSync extends AsyncTask<String, Void, String> {
                     url = new URL(url_1st + URI_2ND + "categories"); //default getAllCategories
                     break;
                 case "ADDARTICLETOLIST":
-                    url = new URL(url_1st + URI_2ND + "categories"); //default getAllCategories
+                    url = new URL(url_1st + URI_2ND + "shoppingList/" + command[2]); //post adds article to specific username
+                    isPost=true;
+                    break;
+                case "DELETEARTICLEFROMLIST":
+                    url = new URL(url_1st + URI_2ND + "shoppingList/delete/" + command[2]); //post semiprof but delete req wont work
+                    isPost=true;
                     break;
                 default: break;
             }
@@ -96,7 +101,7 @@ public class ControllerSync extends AsyncTask<String, Void, String> {
             }
 
             if (isPost) {
-                conn.setRequestMethod("POST");
+                conn.setRequestMethod("POST"); //semiprof for deleting but delete request dose not works(interpreted ass get)
                 conn.setRequestProperty("Content-Type", "application/json");
                 writer = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream()));
                 writer.write(command[1]); //object in json format
