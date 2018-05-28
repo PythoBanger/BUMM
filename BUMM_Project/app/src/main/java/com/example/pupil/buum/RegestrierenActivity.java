@@ -1,73 +1,70 @@
 package com.example.pupil.buum;
 
 import android.content.Intent;
-import android.provider.ContactsContract;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.format.DateFormat;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.pupil.buum.Data.Database;
 
-import org.w3c.dom.Text;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import oracle.jdbc.util.Login;
-
 public class RegestrierenActivity extends AppCompatActivity implements View.OnClickListener{
-    private Button btnRegister;
-    private TextView txtVorname;
-    private TextView txtNachname;
-    private TextView txtPW;
-    private TextView txtUName;
-    private TextView txtStrasse, txtOrt, txtPlz, txtEmail, txtGebDate;
+    private CardView btnRegister, btnBack;
+    private TextView txtVorname, txtNachname,txtUsername,txtPW,txtPWWH,
+                        txtStrasse, txtOrt, txtPlz, txtEmail, txtGebDate;
     Database db;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_regestrieren);
+        try{
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_regestrieren);
 
-        initComponents();
-        setListener();
+
+            ActionBar actionBar = getSupportActionBar();
+            actionBar.hide();
+            initComponents();
+            setListener();
+        }catch (Exception ex){
+            Toast.makeText(this,"Error: " +ex.getMessage(),Toast.LENGTH_LONG).show();
+        }
     }
 
     private void setListener() {
         btnRegister.setOnClickListener(this);
+        btnBack.setOnClickListener(this);
     }
 
     private void initComponents() {
         db = Database.newInstance();
-        btnRegister = (Button) findViewById(R.id.buttonRegister);
-        txtVorname = (TextView) findViewById(R.id.editTextVorname);
-        txtNachname = (TextView) findViewById(R.id.editTextNachname);
-        txtPW = (TextView) findViewById(R.id.editTextPW);
-        txtUName= (TextView) findViewById(R.id.editTextUN);
-        txtOrt=(TextView) findViewById(R.id.editTextOrt);
-        txtStrasse=(TextView) findViewById(R.id.editTextStraße);
-        txtPlz = (TextView) findViewById(R.id.editTextPlz);
-        txtEmail=(TextView) findViewById(R.id.editTextEmail);
-        txtGebDate=(TextView) findViewById(R.id.editTextDate);
+        btnRegister = (CardView) findViewById(R.id.btnRegister);
+        btnBack = (CardView) findViewById(R.id.btnBack);
+        txtVorname = (TextView) findViewById(R.id.txtVorname);
+        txtNachname = (TextView) findViewById(R.id.txtNachname);
+        txtPW = (TextView) findViewById(R.id.txtPasswort);
+        txtPWWH = (TextView) findViewById(R.id.txtPasswortWH);
+        txtUsername= (TextView) findViewById(R.id.txtUsername);
+        txtOrt=(TextView) findViewById(R.id.txtOrt);
+        txtStrasse=(TextView) findViewById(R.id.txtStrasse);
+        txtPlz = (TextView) findViewById(R.id.txtPLZ);
+        txtEmail=(TextView) findViewById(R.id.txtEmail);
+        txtGebDate=(TextView) findViewById(R.id.txtGeburtstag);
     }
 
     @Override
     public void onClick(View view) {
         try{
             switch(view.getId()){
-                case R.id.buttonRegister:{
-                    SimpleDateFormat sdf = new SimpleDateFormat("dd.mm.yyyy");
-                    Date d=sdf.parse(txtGebDate.getText().toString());
-
-                    db.addCustomer(txtUName.getText().toString(),txtPW.getText().toString(),txtVorname.getText().toString(),
-                            txtNachname.getText().toString(),txtStrasse.getText().toString(),txtEmail.getText().toString(),
-                            txtOrt.getText().toString(),"logged off","customer", d,
-                            Integer.parseInt(txtPlz.getText().toString()));
-
-                    Intent intent= new Intent(this, LoginActivity.class);
+                case R.id.btnRegister:{
+                        Intent intent = new Intent(this, LoginActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                        break;
+                }
+                case R.id.btnBack:{
+                    Intent intent = new Intent(this, LoginActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                     break;
@@ -75,7 +72,7 @@ public class RegestrierenActivity extends AppCompatActivity implements View.OnCl
             }
 
         }catch (Exception ex){
-            Toast.makeText(this, "Error by registrate: " + txtGebDate.getText().toString(),Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Error by registrate: " + ex.getMessage(),Toast.LENGTH_LONG).show();
         }
     }
 }

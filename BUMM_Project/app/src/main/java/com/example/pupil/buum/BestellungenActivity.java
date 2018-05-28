@@ -1,16 +1,16 @@
 package com.example.pupil.buum;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.pupil.buum.Data.Article;
 import com.example.pupil.buum.Data.Customer;
 import com.example.pupil.buum.Data.Database;
 
@@ -36,23 +36,28 @@ public class BestellungenActivity extends AppCompatActivity implements Navigatio
         NavigationView navigationView = (NavigationView) findViewById(R.id.navigation);
         navigationView.setNavigationItemSelectedListener(this);
 
-        this.setTitle("Deine Bestellungen");
+        this.setTitle("Your Order");
         setUp();
     }
 
 
     private void setUp(){
-        ArrayList<String> dummyList = new ArrayList<>();
-        dummyList.add("IPhone 10    1000€");
-        dummyList.add("Adidas T-Shirt   20€");
-        dummyList.add("Nike T-Shirt   30€");
+        ArrayList<Article> dummyList = new ArrayList<>();
+        try {
+            dummyList.add(db.getArticle(1));
+            dummyList.add(db.getArticle(3));
+            dummyList.add(db.getArticle(2));
+
+            EventArticleListAdapter itemsAdapter =
+                    new EventArticleListAdapter(this,dummyList);
+
+            ListView SearchListView = (ListView) findViewById(R.id.listView2);
+            SearchListView.setAdapter(itemsAdapter);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
-        ArrayAdapter<String> itemsAdapter =
-                new ArrayAdapter<String>(this, android.R.layout.simple_list_item_multiple_choice, dummyList);
-
-        ListView SearchListView = (ListView) findViewById(R.id.listView2);
-        SearchListView.setAdapter(itemsAdapter);
     }
 
 

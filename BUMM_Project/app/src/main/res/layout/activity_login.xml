@@ -1,72 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/drawer"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@drawable/background"
     tools:context="com.example.pupil.buum.LoginActivity">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+
+    <ImageView
+        android:id="@+id/imgBomb"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true">
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="89dp"
+        app:srcCompat="@drawable/bomb" />
 
-        <LinearLayout
-            android:orientation="horizontal"
+    <EditText
+        android:id="@+id/txtLoginUsername"
+        android:layout_width="200dp"
+        android:layout_height="40dp"
+        android:background="@null"
+        android:drawableStart="@drawable/ic_action_user"
+        android:ems="10"
+        android:hint="@string/username"
+        android:inputType="textPersonName"
+        android:lines="1"
+        android:textSize="18dp"
+        android:layout_below="@+id/imgLogo"
+        android:layout_alignStart="@+id/imgBomb" />
+
+    <EditText
+        android:id="@+id/txtLoginPasswort"
+        android:layout_width="200dp"
+        android:layout_height="40dp"
+        android:layout_alignStart="@+id/txtLoginUsername"
+        android:layout_below="@+id/txtLoginUsername"
+        android:layout_marginTop="33dp"
+        android:background="@null"
+        android:drawableStart="@drawable/ic_action_password"
+        android:ems="10"
+        android:hint="@string/password"
+        android:inputType="textPassword"
+        android:lines="1"
+        android:textSize="18dp" />
+
+    <android.support.v7.widget.CardView
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="45dp"
+        app:cardBackgroundColor="@color/colorButtonBumm"
+        app:cardCornerRadius="25dp"
+        app:cardElevation="10dp"
+        android:id="@+id/btnLogin"
+        android:layout_below="@+id/txtLoginPasswort"
+        android:layout_centerHorizontal="true">
+
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"></LinearLayout>
+            android:layout_height="match_parent">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Username:"
-            android:id="@+id/textViewUsername" />
+            <TextView
+                android:id="@+id/txtLogin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="@string/login"
+                android:textColor="#ffffff"
+                android:textSize="18sp" />
 
-        <EditText
-            android:id="@+id/txtUName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal" />
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
 
-        <TextView
-            android:id="@+id/textViewPass"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Passwort:"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
 
-        <EditText
-            android:id="@+id/txtPW"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="textPassword" />
+            <TextView
+                android:id="@+id/btnRegisterHere"
+                android:layout_width="150dp"
+                android:layout_height="30dp"
+                android:textAlignment="center"
+                android:layout_centerInParent="true"
+                android:layout_below="@id/btnLogin"
+                android:layout_marginTop="15dp"
+                android:text="@string/register_here"
+                android:textColor="#fff"
+                android:textSize="14sp" />
 
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Login"
-            android:id="@+id/buttonLogin" />
 
-        <Button
-            android:id="@+id/buttonRegestrieren"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:text="Regestrieren"
-            android:textColor="@color/colorPrimaryDark" />
 
-    </LinearLayout>
-
+    <ImageView
+        android:id="@+id/imgLogo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/txtUsername"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="62dp"
+        app:srcCompat="@drawable/logo"
+        android:layout_alignParentEnd="true" />
 
 </RelativeLayout>

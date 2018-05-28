@@ -5,7 +5,6 @@ package com.example.pupil.buum.Data;/*
  */
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 
 public class Database{
@@ -92,6 +91,10 @@ public class Database{
 
     public Customer getCustomer(String username, String password) throws Exception { //für login.
 
+        if(username.equals("")|| password.equals("")){
+            throw new Exception("You have to enter your data in all fields");
+        }
+
         for(Customer c: allCustomers){
             if(c.getUsername().equals(username) && c.getPassword().equals(password)){
                 currCustomer=c;
@@ -101,7 +104,7 @@ public class Database{
 
         }
 
-        throw new Exception("customer not registeded");
+        throw new Exception("enter data correctly");
     }
 
     public ArrayList<Customer> getCustomers() throws Exception { //irrelevant auser es ist der admin
@@ -109,6 +112,9 @@ public class Database{
     }
 
     public void updateCustomer(Customer newC) throws Exception { //gilt für daten ändern. aber auch für loggof weil man status nur zum ändern braucht
+        if(newC.getFirstName().equals("") || newC.getLastName().equals("") || newC.getPassword().equals("") || (""+ newC.getZipcode()).equals("") || newC.getAddress().equals("") || newC.getLocation().equals("")){
+            throw new Exception("You have to enter your data in all fields");
+        }
         for(Customer c1 : allCustomers){
             if(newC.getUsername().equals(c1.getUsername())){
                 c1.setPassword(newC.getPassword());
@@ -130,14 +136,14 @@ public class Database{
 
     public void addCustomer(String username, String password, String firstName, String lastName, String address, String email, String location, String status, String role, Date birthdate, int zipcode) throws Exception{ // für register
         if( username.length()==0 || password.length()==0 || firstName.length()==0 || lastName.length()==0   || address.length()==0 || email.length()==0 || location.length()==0  ||  status.length()==0  || role.length()==0 ||  birthdate==null ||  zipcode==0){
-            throw new Exception("invalid data");
+            throw new Exception("You have to enter your data in all field");
         }
 
         Customer newC = new Customer( username,  password,  firstName,  lastName,  address,  email,  location,  status,  role,  birthdate, zipcode);
 
         for(Customer c : allCustomers){
             if(c.getUsername().equals(newC.getUsername()))
-                throw new Exception("customer already exsists");
+                throw new Exception("customer already exists");
         }
 
         allCustomers.add(newC);
@@ -154,17 +160,9 @@ public class Database{
     public void deleteCurrCustomer(){
         currCustomer.setStatus("logged off");
         allCustomers.remove(currCustomer);
+        currCustomer=null;
     }
 
-    public Customer getLoggedInUser() {
-        Customer loggedInCustomer = null;
-        for(Customer c : allCustomers){
-            if(c.getStatus().equals("logged in")){
-                loggedInCustomer=c;
-            }
-        }
-        return loggedInCustomer;
-    }
 }
 
 

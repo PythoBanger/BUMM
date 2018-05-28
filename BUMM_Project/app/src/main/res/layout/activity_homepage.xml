@@ -13,25 +13,20 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:weightSum="1">
+        android:weightSum="1"
+        android:background="@drawable/background">
 
-        <EditText
+        <SearchView
+            android:id="@+id/searchLine"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/editTextSuchfeld"
-            android:hint="Suche..."
-            />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Search"
-            android:id="@+id/button3" />
+            android:layout_height="wrap_content" />
 
         <ListView
             android:id="@+id/listView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            />
 
     </LinearLayout>
 
@@ -39,12 +34,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:menu="@menu/nav_menu"
+        app:itemTextAppearance="@style/nav_menu"
         android:layout_gravity="start"
         android:id="@+id/navigation">
-
-
-
-
 
     </android.support.design.widget.NavigationView>
 

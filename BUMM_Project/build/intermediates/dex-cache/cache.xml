@@ -3,84 +3,12 @@
 
     <item
         is-multidex="false"
-        jar="/home/schueler/.android/build-cache/d02e15b868113adb4eb82e73168cc4e98bad88fb/output/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="25.0.0"
-        sha1="673d77a5bbddd766037f088e775df525c46407f0">
-        <dex dex="/home/schueler/AndroidStudioProjects/04_BUMM/BUMM/BUMM_Project/app/build/intermediates/pre-dexed/debug/classes_5b2a563db1f80dd55fe0dfd85d9a4ea49dedb191.jar" />
-    </item>
-    <item
-        is-multidex="false"
         jar="/home/schueler/AndroidStudioProjects/04_BUMM/BUMM/BUMM_Project/ojdbc14/ojdbc14.jar"
         jumboMode="false"
         optimize="true"
         revision="25.0.0"
         sha1="14ec858a4ac3d5ed3347705a6fb70ab10d38454b">
         <dex dex="/home/schueler/AndroidStudioProjects/04_BUMM/BUMM/BUMM_Project/app/build/intermediates/pre-dexed/debug/ojdbc14_04bdbbb3d54c5b536562676b8be1ff13f25914ae.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/home/schueler/.android/build-cache/4304357018e2ccad0c1a0a0066b2ac7aa558fea5/output/jars/libs/internal_impl-23.2.1.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="25.0.0"
-        sha1="607a3d0b8013b4ccbfeb0b7cb293351994e021fb">
-        <dex dex="/home/schueler/AndroidStudioProjects/04_BUMM/BUMM/BUMM_Project/app/build/intermediates/pre-dexed/debug/internal_impl-23.2.1_5f30064db2603bcd8635d9211c8f8845a17c1301.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/home/schueler/.android/build-cache/defbfe5f8942e5a26bf620fffb2fbf6ef101cab2/output/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="25.0.0"
-        sha1="e4d0cbb0b999604b349062f0214a0a228a7fd151">
-        <dex dex="/home/schueler/AndroidStudioProjects/04_BUMM/BUMM/BUMM_Project/app/build/intermediates/pre-dexed/debug/classes_3363cde0c49152e8b4077bd40f05500df3c798e6.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/home/schueler/.android/build-cache/5e26cf9b9f9ae69d830dd0c9efc24e1057976b54/output/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="25.0.0"
-        sha1="72961d8b453b46e277702f18de9d210bc019e36e">
-        <dex dex="/home/schueler/AndroidStudioProjects/04_BUMM/BUMM/BUMM_Project/app/build/intermediates/pre-dexed/debug/classes_cf1e005060dd1a59ba3fd473dc481cacf93aacf8.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/home/schueler/.android/build-cache/4304357018e2ccad0c1a0a0066b2ac7aa558fea5/output/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="25.0.0"
-        sha1="3be474b1b21b31cf2fa93fe6bd641ae108d96452">
-        <dex dex="/home/schueler/AndroidStudioProjects/04_BUMM/BUMM/BUMM_Project/app/build/intermediates/pre-dexed/debug/classes_f321e48059ee1c48e2fbb6a020c3828ce99e310e.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/home/schueler/Android/Sdk/extras/android/m2repository/com/android/support/support-annotations/23.2.1/support-annotations-23.2.1.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="25.0.0"
-        sha1="ccb693bc0774fcb637246f7360de25b4af7df318">
-        <dex dex="/home/schueler/AndroidStudioProjects/04_BUMM/BUMM/BUMM_Project/app/build/intermediates/pre-dexed/debug/support-annotations-23.2.1_845b3e3b0d926a7b47fe0476634220f6a9dcc3ea.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/home/schueler/.android/build-cache/9ec22b88994e7e1dc3c3c26f722a688bd9c1d014/output/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="25.0.0"
-        sha1="e3885783ff8926ed9e2fdcd16816c2e1e73e7aee">
-        <dex dex="/home/schueler/AndroidStudioProjects/04_BUMM/BUMM/BUMM_Project/app/build/intermediates/pre-dexed/debug/classes_e85be8860b9fa54d931c848e48297c58fa1e16c1.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/home/schueler/.android/build-cache/9d96b50c6a2622ab5567ee155ac940f571d2ec1a/output/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="25.0.0"
-        sha1="3469cb457f10f74c28cbc05f069b6c894f6cbdd0">
-        <dex dex="/home/schueler/AndroidStudioProjects/04_BUMM/BUMM/BUMM_Project/app/build/intermediates/pre-dexed/debug/classes_5eba463f08aae6c71fcb745367b1cc501f60f9dd.jar" />
     </item>
 
 </items>

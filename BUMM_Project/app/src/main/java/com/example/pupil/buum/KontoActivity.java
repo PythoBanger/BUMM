@@ -1,22 +1,19 @@
 package com.example.pupil.buum;
 
 import android.content.Intent;
-import android.provider.ContactsContract;
+import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.pupil.buum.Data.Customer;
 import com.example.pupil.buum.Data.Database;
-
-import java.util.Date;
 
 public class KontoActivity extends AppCompatActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener{
 
@@ -24,12 +21,10 @@ public class KontoActivity extends AppCompatActivity implements View.OnClickList
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
     private NavigationView navigationView;
-    private Button btnSave;
-    private Button btnDelete;
-    private TextView txtVorname;
-    private TextView txtNachname;
-    private TextView txtPW,txtPWWH;
-    private TextView txtStrasse, txtOrt, txtPlz;
+    private CardView btnSaveChanges, btnDeleteAccount;
+    private TextView txtChangeVorname, txtChangeNachname,
+                        txtOldPW, txtPW,txtPWWH, txtStrasse,
+                        txtOrt, txtPlz;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,8 +36,8 @@ public class KontoActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void setListener() {
-        btnSave.setOnClickListener(this);
-        btnDelete.setOnClickListener(this);
+        btnSaveChanges.setOnClickListener(this);
+        btnDeleteAccount.setOnClickListener(this);
         mDrawerLayout.addDrawerListener(mToggle);
         navigationView.setNavigationItemSelectedListener(this);
 
@@ -52,15 +47,16 @@ public class KontoActivity extends AppCompatActivity implements View.OnClickList
         db= Database.newInstance();
         mDrawerLayout =(DrawerLayout) findViewById(R.id.drawer);
         navigationView = (NavigationView) findViewById(R.id.navigation);
-        btnSave = (Button) findViewById(R.id.buttonSpeichern);
-        btnDelete = (Button) findViewById(R.id.buttonKontoLoeschne);
-        txtVorname = (TextView) findViewById(R.id.editTextVorname);
-        txtNachname = (TextView) findViewById(R.id.editTextNachname);
-        txtPW = (TextView) findViewById(R.id.editTextPW);
-        txtPWWH = (TextView) findViewById(R.id.editTextPWWH);
-        txtOrt=(TextView) findViewById(R.id.editTextOrt);
-        txtStrasse=(TextView) findViewById(R.id.editTextStraße);
-        txtPlz = (TextView) findViewById(R.id.editTextPlz);
+        btnSaveChanges = (CardView) findViewById(R.id.btnSaveChanges);
+        btnDeleteAccount = (CardView) findViewById(R.id.btnDeleteAccount);
+        txtChangeVorname = (TextView) findViewById(R.id.txtVorname);
+        txtChangeNachname = (TextView) findViewById(R.id.txtNachname);
+        txtOldPW = (TextView) findViewById(R.id.txtOldPasswort);
+        txtPW = (TextView) findViewById(R.id.txtPasswort                );
+        txtPWWH = (TextView) findViewById(R.id.txtPasswortWH);
+        txtOrt=(TextView) findViewById(R.id.txtOrt);
+        txtStrasse=(TextView) findViewById(R.id.txtStrasse);
+        txtPlz = (TextView) findViewById(R.id.txtPLZ);
 
         mToggle= new ActionBarDrawerToggle(this,mDrawerLayout,R.string.open,R.string.close);
         mToggle.syncState();
@@ -69,8 +65,8 @@ public class KontoActivity extends AppCompatActivity implements View.OnClickList
 
         this.setTitle(db.getCurrCustomer().getUsername());
         Customer cc = db.getCurrCustomer();
-        txtVorname.setText(""+cc.getFirstName());
-        txtNachname.setText(""+cc.getLastName());
+        txtChangeVorname.setText(""+cc.getFirstName());
+        txtChangeNachname.setText(""+cc.getLastName());
         txtOrt.setText(""+cc.getLocation());
         txtPlz.setText(""+cc.getZipcode());
         txtStrasse.setText(""+cc.getAddress());
@@ -136,10 +132,14 @@ public class KontoActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View view) {
         try{
             switch(view.getId()){
-                case R.id.buttonSpeichern:{
+                case R.id.btnSaveChanges:{
                     Customer cc = db.getCurrCustomer();
-                    Customer c = new Customer(cc.getUsername(),txtPW.getText().toString(),txtVorname.getText().toString(),
-                            txtNachname.getText().toString(),txtStrasse.getText().toString(),cc.getEmail(),
+
+                    if(!txtPW.getText().toString().equals(txtPWWH.getText().toString())){
+                        throw new Exception("'Passwort WH:' und 'Passwort' sind nicht identisch");
+                    }
+                    Customer c = new Customer(cc.getUsername(),txtPW.getText().toString(),txtChangeVorname.getText().toString(),
+                            txtChangeNachname.getText().toString(),txtStrasse.getText().toString(),cc.getEmail(),
                             txtOrt.getText().toString(),"logged off","customer", cc.getBirthdate(),Integer.parseInt(txtPlz.getText().toString()));
                     db.updateCustomer(c);
 
@@ -149,15 +149,16 @@ public class KontoActivity extends AppCompatActivity implements View.OnClickList
                     Toast.makeText(this, "Your data has been changed!",Toast.LENGTH_LONG).show();
                     break;
                 }
-                case R.id.buttonKontoLoeschne:{
+                case R.id.btnDeleteAccount:{
                     Intent intent= new Intent(this, LoginActivity.class);
+                    db.deleteCurrCustomer();
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                     break;
                 }
             }
         }catch(Exception ex){
-            Toast.makeText(this, "Error by click on button: " + ex.getMessage(),Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Error: " + ex.getMessage(),Toast.LENGTH_LONG).show();
 
         }
     }

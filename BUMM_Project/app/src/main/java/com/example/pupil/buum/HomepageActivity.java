@@ -1,29 +1,22 @@
 package com.example.pupil.buum;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.pupil.buum.Data.Article;
-import com.example.pupil.buum.Data.Database;
 import com.example.pupil.buum.Data.Customer;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import com.example.pupil.buum.Data.Database;
 
-import oracle.jdbc.util.Login;
-
-public class HomepageActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
+public class HomepageActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, NavigationView.OnNavigationItemSelectedListener{
 
     private Database db;
     private DrawerLayout mDrawerLayout;
@@ -40,39 +33,14 @@ public class HomepageActivity extends AppCompatActivity implements NavigationVie
         setListener();
         insertDummyValues();
     }catch(Exception ex){
-        Toast.makeText(this,"Error in HompageActivity - method 'onCreate': "+ex.getMessage(),Toast.LENGTH_LONG).show();
+        Toast.makeText(this,"Error: "+ex.getMessage(),Toast.LENGTH_LONG).show();
     }
     }
 
     private void setListener() {
         mDrawerLayout.addDrawerListener(mToggle);
         navigationView.setNavigationItemSelectedListener(this);
-        ProductListView.setOnItemClickListener(new ItemList(this));
-    }
-
-    class ItemList implements AdapterView.OnItemClickListener{
-        HomepageActivity current;
-
-        public ItemList(HomepageActivity cur){
-            this.current=cur;
-        }
-
-        @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            try{
-                Article a = (Article)adapterView.getItemAtPosition(i);
-                if(a==null) {
-                    throw new Exception("no article selected");
-                }
-
-                Intent intent = new Intent(current,ProduktansichtActivity.class);
-                intent.putExtra("selectedProduct", a.getId());
-                startActivity(intent);
-
-            }catch(Exception ex){
-                Toast.makeText(current,"Error caused by selecting spinner item: " + ex.getMessage(),Toast.LENGTH_LONG).show();
-            }
-        }
+        ProductListView.setOnItemClickListener(this);
     }
 
     private void initComponents() {
@@ -87,13 +55,11 @@ public class HomepageActivity extends AppCompatActivity implements NavigationVie
     }
 
     private void insertDummyValues() throws Exception {
-        ArrayAdapter<Article> itemsAdapter =
-                new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, db.getArticles());
+        EventArticleListAdapter itemsAdapter =
+                new EventArticleListAdapter(this, db.getArticles());
 
         ProductListView.setAdapter(itemsAdapter);
     }
-
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -110,13 +76,14 @@ public class HomepageActivity extends AppCompatActivity implements NavigationVie
         try{
             switch (item.getItemId()){
                 case R.id.homepage:{
-                    startActivity(new Intent(HomepageActivity.this, HomepageActivity.class));
+                    startActivity(new Intent(this, HomepageActivity.class));
                     break;
                 }
                 case R.id.logout:{
                     Customer c = db.getCurrCustomer();
                     c.setStatus("logged off");
                     db.updateCustomer(c);
+                    db.setCurrCustomer(null);
 
                     Intent intent= new Intent(this, LoginActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -124,7 +91,7 @@ public class HomepageActivity extends AppCompatActivity implements NavigationVie
                     break;
                 }
                 case R.id.meinKonto:{
-                    startActivity(new Intent(HomepageActivity.this, KontoActivity.class));
+                    startActivity(new Intent(this, KontoActivity.class));
                     break;
                 }
                 case R.id.warenkorb:{
@@ -148,5 +115,22 @@ public class HomepageActivity extends AppCompatActivity implements NavigationVie
         }
 
         return false;
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        try{
+            Article a = (Article)adapterView.getItemAtPosition(i);
+            if(a==null) {
+                throw new Exception("no article selected");
+            }
+
+            Intent intent = new Intent(this,ProduktansichtActivity.class);
+            intent.putExtra("selectedProduct", a.getId());
+            startActivity(intent);
+
+        }catch(Exception ex){
+            Toast.makeText(this,"Error caused by selecting spinner item: " + ex.getMessage(),Toast.LENGTH_LONG).show();
+        }
     }
 }

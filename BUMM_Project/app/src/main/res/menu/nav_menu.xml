@@ -1,13 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/homepage"
-        android:title="Homepage"></item>
-    <item android:id="@+id/meinKonto"
-        android:title="Mein Konto"></item>
-    <item android:id="@+id/warenkorb"
-        android:title="Warenkorb"></item>
-    <item android:id="@+id/meineBestellungen"
-        android:title="Meine Bestellungen"></item>
-    <item android:id="@+id/logout"
-        android:title="Abmelden"></item>
+    <item
+        android:id="@+id/homepage"
+        android:title="@string/homepage"
+        android:icon="@drawable/ic_home">
+    </item>
+    <item
+        android:id="@+id/meinKonto"
+        android:title="Account"
+        android:icon="@drawable/ic_account"></item>
+    <item
+        android:id="@+id/warenkorb"
+        android:title="Shopping Cart"
+        android:icon="@drawable/ic_shopping_cart"></item>
+    <item
+        android:id="@+id/meineBestellungen"
+        android:icon="@drawable/ic_orders"
+        android:title="My  Orders"></item>
+    <item
+        android:id="@+id/logout"
+        android:title="Logout"
+        android:icon="@drawable/ic_exit"></item>
 </menu>

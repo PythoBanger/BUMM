@@ -1,14 +1,16 @@
 package com.example.pupil.buum;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,7 +21,7 @@ import com.example.pupil.buum.Data.Database;
 
 import java.util.ArrayList;
 
-public class ProduktansichtActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
+public class ProduktansichtActivity extends AppCompatActivity implements View.OnClickListener,NavigationView.OnNavigationItemSelectedListener{
 
     private Database db;
     private DrawerLayout mDrawerLayout;
@@ -29,8 +31,9 @@ public class ProduktansichtActivity extends AppCompatActivity implements Navigat
     private int pr;
     private Spinner onStock;
     private TextView txtName;
-    private TextView txtPreis;
-    private TextView txtKB;
+    private TextView txtPrice;
+    private TextView txtDesc;
+    private TextView btnRate;
 
 
     @Override
@@ -43,7 +46,7 @@ public class ProduktansichtActivity extends AppCompatActivity implements Navigat
             setListener();
         }catch (Exception ex){
             ex.printStackTrace();
-            Toast.makeText(this,"Error in ProduktansichtActivity - method 'onCreate': "+pr,Toast.LENGTH_LONG).show();
+            Toast.makeText(this,"Error: "+pr,Toast.LENGTH_LONG).show();
         }
     }
 
@@ -52,8 +55,8 @@ public class ProduktansichtActivity extends AppCompatActivity implements Navigat
         selectedArticle = db.getArticle(pr);
 
         txtName.setText("" + selectedArticle.getName());
-        txtPreis.setText("" + selectedArticle.getPrice() + "0€");
-        txtKB.setText("" + selectedArticle.getDescription());
+        txtPrice.setText("" + selectedArticle.getPrice() + "0€");
+        txtDesc.setText("" + selectedArticle.getDescription());
         fillSpinnerWithAvailableSock();
     }
 
@@ -74,18 +77,20 @@ public class ProduktansichtActivity extends AppCompatActivity implements Navigat
     private void setListener() throws Exception {
         mDrawerLayout.addDrawerListener(mToggle);
         navigationView.setNavigationItemSelectedListener(this);
+        btnRate.setOnClickListener(this);
 
         showProduct();
     }
 
     private void initComponents() throws Exception {
         db= Database.newInstance();
-        txtName = (TextView) findViewById(R.id.txtName);
-        txtPreis = (TextView) findViewById(R.id.txtPreis);
-        txtKB = (TextView) findViewById(R.id.txtKB);
+        txtName = (TextView) findViewById(R.id.txtProductName);
+        txtPrice = (TextView) findViewById(R.id.txtPrice);
+        txtDesc = (TextView) findViewById(R.id.txtDesc);
+        btnRate = (TextView) findViewById(R.id.btnRateProduct);
         mDrawerLayout =(DrawerLayout) findViewById(R.id.drawer);
         navigationView = (NavigationView) findViewById(R.id.navigation);
-        onStock = (Spinner) findViewById(R.id.spinnerAnzahl);
+        onStock = (Spinner) findViewById(R.id.countProducts);
         mToggle= new ActionBarDrawerToggle(this,mDrawerLayout,R.string.open,R.string.close);
         mToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -133,5 +138,34 @@ public class ProduktansichtActivity extends AppCompatActivity implements Navigat
         }
 
         return false;
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.btnRateProduct:{
+                AlertDialog.Builder alert = new AlertDialog.Builder(this);
+                alert.setTitle("Rate " + selectedArticle.getName());
+                alert.setMessage("Message");
+                // Create TextView
+                final TextView input = new TextView (this);
+                alert.setView(input);
+
+                alert.setPositiveButton("btnRate", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        input.setText("Rate");
+                        // Do something with value!
+                    }
+                });
+
+                alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        // Canceled.
+                    }
+                });
+                alert.show();
+                break;
+            }
+        }
     }
 }
