@@ -3,7 +3,7 @@ DROP TABLE ImageCallery CASCADE CONSTRAINTS;
 DROP TABLE Article CASCADE CONSTRAINTS;
 DROP TABLE Category CASCADE CONSTRAINTS;
 DROP TABLE Rating CASCADE CONSTRAINTS;
-DROP TABLE Notification CASCADE CONSTRAINTS;
+DROP TABLE RatingReport CASCADE CONSTRAINTS;
 DROP TABLE BummOrder CASCADE CONSTRAINTS;
 DROP TABLE ShoppingList CASCADE CONSTRAINTS;
 
@@ -38,7 +38,7 @@ CREATE SEQUENCE seqArticle START WITH 1 INCREMENT BY 1;
 
 CREATE TABLE Article(
   artNr INTEGER,
-  name VARCHAR2(50), /*muss nicht eindeutig sein. es können ja mehrere unterschiedliche z.b Iphone4 verkauft werden. */
+  name VARCHAR2(50), /*muss nicht eindeutig sein. es kÃ¶nnen ja mehrere unterschiedliche z.b Iphone4 verkauft werden. */
   description VARCHAR2(50),
   price FLOAT, 
   onStock INTEGER,
@@ -66,17 +66,13 @@ CREATE TABLE Rating(
   CONSTRAINT fk_Art FOREIGN KEY(artNr) REFERENCES Article(artNr),
   CONSTRAINT check_rating CHECK (ratingValue > 0 AND ratingValue < 6 )
 );
-
-
-CREATE TABLE Notification(
-  typ VARCHAR2(50),
-  sender VARCHAR2(50),
-  receiver VARCHAR2(50),
-  receivDate DATE,
-  CONSTRAINT fk_BU2 FOREIGN KEY(sender) REFERENCES BummUser(username),
-  CONSTRAINT fk_BU3 FOREIGN KEY(receiver) REFERENCES BummUser(username),
-  CONSTRAINT check_typ CHECK (typ is not null and ( typ = 'warning' or typ = 'order send' or typ='comment report' or typ='article no longer for sale')),
-  CONSTRAINT check_senderandrec CHECK (sender != receiver)  
+CREATE TABLE RatingReport(
+  artNr INTEGER,
+  reportedUser VARCHAR2(50),
+  userWhoReported VARCHAR(50),
+  reportDate DATE,
+  CONSTRAINT pk_RatingV8 PRIMARY KEY (artNr,reportedUser,userWhoReported), /*user kann ein rating(kommentar) nur einmal melden*/
+  CONSTRAINT fk_ArV7t FOREIGN KEY(artNr,reportedUser) REFERENCES Rating(artNr,username)
 );
 
 CREATE SEQUENCE seqOrder START WITH 1 INCREMENT BY 1;
@@ -103,11 +99,11 @@ INSERT INTO BummUser VALUES ('pesso','nim',NULL,NULL,NULL,NULL,NULL,NULL,NULL,'c
 INSERT INTO ShoppingList VALUES('pesso',3);
 INSERT INTO Category VALUES('Alle Artikel',NULL); 
 
-INSERT INTO Category VALUES('Technische Geräte','Alle Artikel'); 
+INSERT INTO Category VALUES('Technische GerÃ¤te','Alle Artikel'); 
 INSERT INTO Category VALUES('Kleidung','Alle Artikel');
 
-INSERT INTO Category VALUES('Handy', 'Technische Geräte');
-INSERT INTO Category VALUES('Laptop', 'Technische Geräte');
+INSERT INTO Category VALUES('Handy', 'Technische GerÃ¤te');
+INSERT INTO Category VALUES('Laptop', 'Technische GerÃ¤te');
 INSERT INTO Category VALUES('Hosen', 'Kleidung');
 INSERT INTO Category VALUES('T-Shirt', 'Kleidung');
 
