@@ -15,7 +15,7 @@ CREATE TABLE BummUser (
   password VARCHAR2(100),
   firstname VARCHAR2(50),
   lastname VARCHAR2(50),
-  email VARCHAR(50),
+  email VARCHAR(50) UNIQUE,
   birthdate DATE,
   location VARCHAR2(50),
   zipcode INTEGER,
