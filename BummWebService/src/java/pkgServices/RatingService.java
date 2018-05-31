@@ -6,7 +6,7 @@
 package pkgServices;
 
 import com.google.gson.Gson;
-import java.sql.SQLIntegrityConstraintViolationException;
+import java.sql.SQLException;
 import java.util.Collection;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -17,7 +17,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import pkgData.Database;
 import pkgData.Rating;
@@ -47,73 +49,62 @@ public class RatingService {
     //get all ratings of each article for eg. admin want too see every article to check if no bad words are..
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Collection<Rating> getAllRatings() throws Exception {
-        return db.getAllRatings();
+    public Response getAllRatings() throws Exception {
+        return Response.ok(new Gson().toJson(db.getAllRatings())).build();
     }
 
     //returns ratings of specific article for eg customer
     @GET
     @Path("/{artNr}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public String getRatigsOfArticle(@PathParam("artNr") int artNr) throws Exception {
-        return new Gson().toJson(db.getRatings(artNr));
+    public Response getRatigsOfArticle(@PathParam("artNr") int artNr) throws Exception {
+        return Response.ok(new Gson().toJson(db.getRatings(artNr))).build();
     }
 
-    //return specific rating of specific user and article
-    @GET
-    @Path("/{artNr}/{username}")
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Rating getUser(@PathParam("artNr") int artNr, @PathParam("username") String username) throws Exception {
-        Rating r = db.getRating(username, artNr);
-        if (r == null) {
-            throw new Exception("no rating with from that user with this article found...");
+
+
+    //adds rating to db 
+    @POST
+    @Consumes({MediaType.APPLICATION_JSON})
+    public Response addNewRating(String newR) throws Exception {
+        Response r = Response.ok().build();
+      
+        try {
+            db.addRating(new Gson().fromJson(newR,Rating.class));
+        }catch (SQLException e) {
+            r= Response.status(Response.Status.BAD_REQUEST).entity("u've already rated this article.").build();;
+        } catch(Exception ex){
+            r= Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();;
         }
 
         return r;
     }
 
-    //adds rating to db 
-    @POST
-    @Consumes({MediaType.APPLICATION_JSON})
-    public String addNewRating(Rating newRating) throws Exception {
-        String addStatus = "rating added";
-      
-        try {
-            db.addRating(newRating);
-        }catch (SQLIntegrityConstraintViolationException e) {
-            addStatus = "u've already rated this article.";
-        } catch(Exception ex) {
-            addStatus = ex.getMessage();
-        }
-
-        return addStatus;
-    }
-
     
     @PUT
     @Consumes({MediaType.APPLICATION_JSON})
-    public String updateRating(String rToUpdate) throws Exception{
-        String isUpdated="rating updated";
+    public Response updateRating(String rToUpdate) throws Exception{
+        Response r = Response.ok().build();
         try{         
-            Rating ratingToUpdate = new Gson().fromJson(rToUpdate,Rating.class);
-            db.updateRating(ratingToUpdate);
+            db.updateRating(new Gson().fromJson(rToUpdate,Rating.class));
         }catch(Exception ex){
-            isUpdated=ex.getMessage();
+            r= Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();;
         }
-        return isUpdated;
+        return r;
     }
     
-    @POST
-    @Path("/delete") //semiprof- but @DELETE wont work(gets interpretted as get) ask org
-    @Consumes({MediaType.APPLICATION_JSON})
-    public String deleteRating(String rToDelete) throws Exception{
-        String isDeleted="rating deleted";
-        try{         
-            Rating ratingToUpdate = new Gson().fromJson(rToDelete,Rating.class);
-            db.deleteRating(ratingToUpdate);
+    
+    @DELETE
+    @Path("/delete/{artNr}/{username}") 
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response deleteRatingV2(@PathParam("artNr") int artNr, @PathParam("username") String username) throws Exception{
+        Response isDeleted= Response.ok().build();
+        try{    
+            db.deleteRating(db.getRating(username, artNr));
         }catch(Exception ex){
-            isDeleted=ex.getMessage();
+            isDeleted = Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
         }
+        
         return isDeleted;
     }
     

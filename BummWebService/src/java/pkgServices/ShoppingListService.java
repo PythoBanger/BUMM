@@ -5,6 +5,10 @@
  */
 package pkgServices;
 
+import com.google.gson.Gson;
+import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
+import javax.validation.ConstraintViolationException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -14,6 +18,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import pkgData.Article;
 import pkgData.Database;
@@ -50,15 +55,15 @@ public class ShoppingListService {
     //get  shoppingList Of specific User
     @GET
     @Path("/{username}")
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public ShoppingList getShoppingCart(@PathParam("username") String username) throws Exception {   
-        return db.getShoppingList(username);       
+    @Produces({MediaType.APPLICATION_JSON})
+    public String getShoppingCart(@PathParam("username") String username) throws Exception {
+        return new Gson().toJson(db.getShoppingList(username));       
     }
     
     //returns the article with the article id from the users shoppinglist
     @GET
     @Path("/{username}/{artNr}")
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces({MediaType.APPLICATION_JSON})
     public Article getShoppingCart(@PathParam("username") String username, @PathParam("artNr") int artNr) throws Exception {   
         //return db.getShoppingList(username);  
         Article a = db.getArticleFromShoppingList(username, artNr);
@@ -71,19 +76,42 @@ public class ShoppingListService {
     @POST
     @Path("/{username}")
     @Consumes({MediaType.APPLICATION_JSON})
-    public String addArticleToList(@PathParam("username") String username, Article a) throws Exception{
-        String addStatus="add is ok";
+    public Response addArticleToList(@PathParam("username") String username, Article a) throws Exception{
+        
+        Response r = Response.ok().build();
+      
         try{
             db.addArticleToShoppingList(username,a);
+        } catch (SQLException e ) { //semi prof but .... SQLIntegrityConstraintViolationException and ConstraintViolationException wont work. only sqlexception works
+            r = Response.status(Response.Status.BAD_REQUEST).entity("article already added in list").build();
         }catch(Exception ex){
-            addStatus=ex.getMessage();
+            r = Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
         }
        
-        return addStatus;
+        return r;
     }
 
     
+    @DELETE //semiprof but delete request does not work
+    @Path("/delete/{artNr}/{username}")
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response deleteArticleFromList(@PathParam("artNr") int artNr,@PathParam("username") String username) throws Exception{
+        System.out.println("tttttt");
+        Response isDeleted= Response.ok().build();
+        try{    
+            db.deleteArticleFromShoppingList(username, artNr);
+        }catch(Exception ex){
+            isDeleted = Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
+        }
+        
+        return isDeleted;
+    }
+
+    
+    
+    
     //not ok... always calls get....
+    /*
     @DELETE
     @Path("/{username}/{artNr}")
     public String deleteArticleFromList(@PathParam("username") String username, @PathParam("artNr") int artNr ) throws Exception{
@@ -95,6 +123,6 @@ public class ShoppingListService {
         }
        
         return addStatus;
-    }
+    }*/
     
 }

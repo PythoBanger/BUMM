@@ -17,6 +17,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import pkgData.Article;
 import pkgData.Database;
@@ -44,64 +45,67 @@ public class ArticleService {
     
     //gets all articles ordered by articleId (default)
     @GET
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public String getArticles() throws Exception {  
-        return new Gson().toJson(db.getAllArticles());       
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response getArticles() throws Exception {  
+        return Response.ok().entity(new Gson().toJson(db.filterArticles("","Alle Artikel"))).build();       
     }
       
     @GET
     @Path("/{artNr}")
     @Produces({MediaType.APPLICATION_JSON})
-    public Article getArticle(@PathParam("artNr") int artNr) throws Exception {   
+    public Response getArticle(@PathParam("artNr") int artNr) throws Exception {   
         Article a= db.getArticle(artNr);
-        return a;
+        Response r =null;
+        if(a==null)
+            r = Response.status(Response.Status.NOT_FOUND).entity("article not found").build();
+        else
+            r = Response.ok().entity(new Gson().toJson(a)).build();
+        
+        return r;
     }
 
     @GET
     @Path("/filter")
     @Produces({MediaType.APPLICATION_JSON})
-    public Collection<Article> filterArticles(@Context HttpHeaders httpHeaders) throws Exception {   
+    public Response filterArticles(@Context HttpHeaders httpHeaders) throws Exception {   
         String nameToFilter = httpHeaders.getRequestHeader("name").get(0);
         String categoryName = httpHeaders.getRequestHeader("category").get(0);
         if(categoryName.length()==0)
                 categoryName="Alle Artikel"; //default category
         
-       return db.filterArticles(nameToFilter,categoryName);
+       return Response.ok().entity(new Gson().toJson(db.filterArticles(nameToFilter,categoryName))).build();
     }
 
    
-    //creates a new article
     @POST
     @Consumes({MediaType.APPLICATION_JSON})
-    public String addNewArticle(Article newArticle) throws Exception{
-        String isAdded="new article added";
+    public Response addNewArticle(Article newArticle) throws Exception{
+        Response r = Response.ok().build();
         try{
             db.addArticle(newArticle);
         }catch(Exception ex){
-            isAdded=ex.getMessage();
+            r = Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
         }
-        return isAdded;
+        return r;
     }
 
     
     //updates article. not finished eg admin and onstock
     @PUT
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public String updateArticle(Article articleToUpdate) throws Exception{
-        String isUpdated="article updated";
+    public Response updateArticle(Article articleToUpdate) throws Exception{
+        Response r = Response.ok().build();
         try{
             db.updateArticle(articleToUpdate);
         }catch(Exception ex){
-            isUpdated=ex.getMessage();
+            r = Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
         }
-        return isUpdated;
+        return r;
     }
 
     //TODO: delete article but erst beim artikel gedanken machen......
-
-    
     //
-    @PUT
+    /*@PUT
     @Path("/decrease")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public String decreaseOnStock(Article articleToUpdate) throws Exception{
@@ -112,6 +116,6 @@ public class ArticleService {
             isUpdated=ex.getMessage();
         }
         return isUpdated;
-    }
+    }*/
 
 }

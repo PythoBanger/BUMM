@@ -6,12 +6,7 @@
 package pkgServices;
 
 import com.google.gson.Gson;
-import java.sql.SQLIntegrityConstraintViolationException;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Collection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.sql.SQLException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -22,6 +17,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.Response;
 import pkgData.Database;
 import pkgData.User;
 
@@ -51,87 +47,68 @@ public class UserService {
     //get all users
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    public String getUsers() throws Exception {
-        return new Gson().toJson(db.getAllUsers());
+    public Response getUsers() throws Exception {
+        return Response.ok().entity(new Gson().toJson(db.getAllUsers())).build();
     }
+    
 
     //returns specific user by id: eg if admin checks a specific user he only needs username
     @GET
     @Path("/{username}")
     @Produces({MediaType.APPLICATION_JSON})
-    public String getUser(@PathParam("username") String username) throws Exception {
+    public Response getUser(@PathParam("username") String username) throws Exception {
         User u = db.getUser(username);
+        Response r=null;
         if (u == null) {
-            throw new Exception("no user with that id found");
-        }
+            r= Response.status(Response.Status.NOT_FOUND).entity("user not found").build();
+        }else
+            r = Response.ok().entity(new Gson().toJson(u)).build();
 
-        return new Gson().toJson(u);
+        return r;
     }
 
     @POST
     @Path("/login")
     @Consumes({MediaType.APPLICATION_JSON})
-    public String login(User loginData) throws Exception {
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response login(User loginData) throws Exception {
+        System.out.println("lkjlkj");
+        Response r;
         User u = db.getUser(loginData.getUsername(), loginData.getPassword());
-        if (u == null) {
-            return null;
-        }
-        return new Gson().toJson(u,User.class);
-
+        if (u != null) 
+            r = Response.ok().entity(new Gson().toJson(u,User.class)).build();
+        else
+            r= Response.status(Response.Status.NOT_FOUND).entity("user not found").build();
+        
+        return r;
     }
 
     
     @POST
     @Consumes({MediaType.APPLICATION_JSON})
-    public String addNewUser(String newUser) throws Exception {
-        String isAdded = "register ok";
-        Gson gson = new Gson();
-        User newU = gson.fromJson(newUser, User.class);
-
+    public Response addNewUser(String newUser) throws Exception {
+        Response r = Response.ok().build();        
         try {
-            db.addUser(newU);
-        } catch (SQLIntegrityConstraintViolationException e) {
-            isAdded = "user already exists";
-        } catch (Exception ex) {
-            isAdded = ex.getMessage();
+            db.addUser(new Gson().fromJson(newUser, User.class));
+        } catch (SQLException e) { //catches SQLIntegratonError so I already now what happened
+            r= Response.status(Response.Status.BAD_REQUEST).entity("user already exists").build();
+        } catch(Exception ex){
+            r= Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
         }
-        return isAdded;
+        return r;
     }
 
     //updates user
     @PUT
     @Consumes({MediaType.APPLICATION_JSON})
-    public String updateUser(String userToUpdate) throws Exception {
-        String isUpdated = "user updated";
+    public Response updateUser(String userToUpdate) throws Exception {
+        Response r = Response.ok().build();        
         try {
             db.updateUser(new Gson().fromJson(userToUpdate, User.class));
         } catch (Exception ex) {
-            isUpdated = ex.getMessage();
+            r= Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
         }
-        return isUpdated;
+        return r;
     }
 
-    //eventuell noch delete aber mal schauen erst bei admin gedanken machen
-    /* not needed anymore
-    @DELETE
-    @Path("/{username}")
-    public boolean deleteUserWithID(@PathParam("username") String username) throws Exception{      
-        boolean isDeleted=true;
-        try{
-            isDeleted = db.deleteUserById(username);
-        }catch(Exception ex){ //uknown error
-            isDeleted=false;
-        }
-        return isDeleted;
-    }*/
-
- /* not needed anymore: activate blockiert instead
-    public boolean deleteUserById(String username) throws Exception { 
-        conn = createConnection();
-        PreparedStatement ps = conn.prepareStatement("DELETE * FROM BummUser WHERE username=? AND role = 'customer'"); //admins cant delete themselves..
-        ps.setString(1, username);
-        boolean isDeleted = ps.executeQuery().rowDeleted();          
-        conn.close();
-        return isDeleted;
-    }*/
 }

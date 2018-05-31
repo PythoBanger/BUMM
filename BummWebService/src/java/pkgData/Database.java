@@ -25,7 +25,7 @@ public class Database {
     // private static final String CONNECTSTRING = "jdbc:oracle:thin:@localhost:1521:orcl";
 
     private static final String CONNECTSTRING = "jdbc:oracle:thin:@212.152.179.117:1521:ora11g";
-  //  private static final String CONNECTSTRING = "jdbc:oracle:thin:@192.168.128.152:1521:ora11g";
+ //   private static final String CONNECTSTRING = "jdbc:oracle:thin:@192.168.128.152:1521:ora11g";
     private static final String USER = "d4a10";
     private static final String PASSWD = "d4a";
     private Connection conn = null;
@@ -243,7 +243,7 @@ public class Database {
     public void updateArticle(Article articleToUpdate) throws Exception {
         conn = createConnection();
 
-        String select = "UPDATE Article SET name=?, description=?, price=?, onStock=onStock-?,"
+        String select = "UPDATE Article SET name=?, description=?, price=?, onStock=onStock+?,"
                 + " artCategory=? WHERE artNr = ?";
         PreparedStatement stmt = conn.prepareStatement(select);
 
@@ -278,7 +278,8 @@ public class Database {
         return collArticles;
     }
 
-    public void decreaseOnStock(Article art) throws Exception {
+    /*public void decreaseOnStock(Article art) throws Exception {
+       
         conn = createConnection();
 
         String select = "UPDATE Article SET  onStock=onStock-?  WHERE artNr = ?";
@@ -288,14 +289,14 @@ public class Database {
         stmt.setInt(2, art.getArtNr());
         stmt.executeQuery();
         conn.close();
-    }
+    }*/
 
     //toDo: think how the best return should be..... wheter like now or using the arraylist ask ortner
     public Collection<Category> getAllCategories() throws Exception {
         ArrayList<Category> collCategories = new ArrayList<>();
 
         conn = createConnection();
-        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM Category");
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM Category START WITH CURCATEGORY = 'Alle Artikel' CONNECT BY PRIOR CURCATEGORY=PARENTCATEGORY ORDER siblings BY CURCATEGORY");
         ResultSet rs = stmt.executeQuery();
         while (rs.next()) {
             collCategories.add(new Category(rs.getString(1), rs.getString(2))); //current,parent
@@ -346,7 +347,7 @@ public class Database {
         return a;
     }
 
-    //not ok....
+
     public void deleteArticleFromShoppingList(String username, int artNr) throws Exception {
         conn = createConnection();
 
@@ -436,6 +437,9 @@ public class Database {
     }
 
     public void deleteRating(Rating ratingToUpdate) throws Exception{
+        if(ratingToUpdate==null)
+            throw new Exception("no rating found");
+        
         conn = createConnection();
 
         String select = "DELETE FROM Rating WHERE artNr = ? AND username=?"; 
@@ -445,5 +449,4 @@ public class Database {
         stmt.executeQuery();
         conn.close();
     }
-
 }

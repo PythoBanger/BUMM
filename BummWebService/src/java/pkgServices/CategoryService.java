@@ -5,12 +5,14 @@
  */
 package pkgServices;
 
+import com.google.gson.Gson;
 import java.util.Collection;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import pkgData.Category;
 import pkgData.Database;
@@ -39,8 +41,8 @@ public class CategoryService {
      //gets all categories as a collection
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    public Collection<Category> getAllCategories() throws Exception {   
-        return db.getAllCategories();       
+    public Response getAllCategories() throws Exception {   
+        return Response.ok(new Gson().toJson(db.getAllCategories())).build();       
     }
     
     
