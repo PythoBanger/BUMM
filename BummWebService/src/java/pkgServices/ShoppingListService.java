@@ -96,7 +96,6 @@ public class ShoppingListService {
     @Path("/delete/{artNr}/{username}")
     @Produces({MediaType.APPLICATION_JSON})
     public Response deleteArticleFromList(@PathParam("artNr") int artNr,@PathParam("username") String username) throws Exception{
-        System.out.println("tttttt");
         Response isDeleted= Response.ok().build();
         try{    
             db.deleteArticleFromShoppingList(username, artNr);

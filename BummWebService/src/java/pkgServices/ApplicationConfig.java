@@ -34,6 +34,7 @@ public class ApplicationConfig extends Application {
         resources.add(pkgServices.RatingService.class);
         resources.add(pkgServices.ShoppingListService.class);
         resources.add(pkgServices.UserService.class);
+        resources.add(pkgServices.RatingReportService.class);
     }
     
 }

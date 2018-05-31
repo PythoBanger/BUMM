@@ -92,7 +92,7 @@ public class ArticleService {
     
     //updates article. not finished eg admin and onstock
     @PUT
-    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Consumes({MediaType.APPLICATION_JSON})
     public Response updateArticle(Article articleToUpdate) throws Exception{
         Response r = Response.ok().build();
         try{

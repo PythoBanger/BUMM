@@ -15,6 +15,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response;
@@ -67,12 +68,19 @@ public class UserService {
         return r;
     }
 
+    @GET
+    @Path("/filter")
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response filterUsers(@Context HttpHeaders httpHeaders) throws Exception {   
+       String usernameToFilter = httpHeaders.getRequestHeader("username").get(0);        
+       return Response.ok().entity(new Gson().toJson(db.filterUsers(usernameToFilter))).build();
+    }
+
     @POST
     @Path("/login")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
     public Response login(User loginData) throws Exception {
-        System.out.println("lkjlkj");
         Response r;
         User u = db.getUser(loginData.getUsername(), loginData.getPassword());
         if (u != null) 

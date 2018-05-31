@@ -65,6 +65,22 @@ public class Database {
         return collUsers;
     }
 
+    public Collection<User> filterUsers(String usernameToFilter) throws Exception{
+        ArrayList<User> collUsers = new ArrayList<>();
+
+        conn = createConnection();
+        String select = "SELECT * FROM BummUser WHERE role = 'customer' and upper(username) like upper(?)"; //admin can only edit customers
+        PreparedStatement stmt = conn.prepareStatement(select);
+        stmt.setString(1, "%" + usernameToFilter + "%");
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            collUsers.add(getUserValues(rs));
+        }
+        conn.close();
+        return collUsers;    
+    }
+    
+    
     public User getUser(String username) throws Exception {
         conn = createConnection();
         String select = "SELECT * FROM BummUser WHERE username=?";
@@ -250,7 +266,7 @@ public class Database {
         stmt.setString(1, articleToUpdate.getName());
         stmt.setString(2, articleToUpdate.getDescription());
         stmt.setFloat(3, articleToUpdate.getPrice());
-        stmt.setInt(4, articleToUpdate.getDecStock());
+        stmt.setInt(4, articleToUpdate.getChangeStock()); //entweder addens wen pos ist sonst tut mans eh abziehen
         stmt.setString(5, articleToUpdate.getArtCategory());
         stmt.setInt(6, articleToUpdate.getArtNr());
         stmt.executeQuery();
@@ -436,17 +452,69 @@ public class Database {
         conn.close();
     }
 
-    public void deleteRating(Rating ratingToUpdate) throws Exception{
-        if(ratingToUpdate==null)
+    public void deleteRating(Rating ratingToDelete) throws Exception{
+        if(ratingToDelete==null)
             throw new Exception("no rating found");
         
+        deleteRatingReport(ratingToDelete.getUserWhoRated().getUsername(),(ratingToDelete.getRatedArticle().getArtNr())); //if user deletes hiss comment: no need to keep his reports; if admin deletes reported rating which calls this function it also automaticcalyy deletes the reports of it
         conn = createConnection();
-
         String select = "DELETE FROM Rating WHERE artNr = ? AND username=?"; 
         PreparedStatement stmt = conn.prepareStatement(select);
-        stmt.setInt(1, ratingToUpdate.getRatedArticle().getArtNr());
-        stmt.setString(2, ratingToUpdate.getUserWhoRated().getUsername());
+        stmt.setInt(1, ratingToDelete.getRatedArticle().getArtNr());
+        stmt.setString(2, ratingToDelete.getUserWhoRated().getUsername());
         stmt.executeQuery();
         conn.close();
     }
+    
+    
+
+    
+    
+    
+    public Collection<RatingReport> getAllRatingsReports() throws Exception{
+        ArrayList<RatingReport> collRatingsReports = new ArrayList<>();
+
+        conn = createConnection();
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM RatingReport");
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            collRatingsReports.add(getRatingReportValues(rs));
+        }
+        conn.close();
+        return collRatingsReports;
+    }
+    
+    private RatingReport getRatingReportValues(ResultSet rs) throws Exception {
+        Rating r = getRating(rs.getString("reportedUser"),rs.getInt("artNr"));
+        RatingReport rp = new RatingReport(r,getUser(rs.getString("userWhoReported")),rs.getDate("reportDate").toLocalDate());
+        return rp;
+    }
+
+    public void addRatingReport(RatingReport newRatingReport) throws Exception{
+        conn = createConnection();
+
+        String select = "INSERT INTO RatingReport VALUES(?,?,?,?)";
+        PreparedStatement stmt = conn.prepareStatement(select);
+        stmt.setInt(1, newRatingReport.getReportedRating().getRatedArticle().getArtNr());
+        stmt.setString(2, newRatingReport.getReportedRating().getUserWhoRated().getUsername());
+        stmt.setString(3, newRatingReport.getUserWhoReported().getUsername());
+        stmt.setDate(4, Date.valueOf(LocalDate.now()));
+        stmt.executeQuery();
+        conn.close();  
+    }
+    
+    public void deleteRatingReport(String reportedUser, int artNr) throws Exception{
+        conn = createConnection();
+
+        String select = "DELETE FROM RatingReport WHERE artNr = ? AND reportedUser=?"; 
+        PreparedStatement stmt = conn.prepareStatement(select);
+        stmt.setInt(1, artNr);
+        stmt.setString(2, reportedUser);
+        stmt.executeQuery();
+        conn.close();
+    }
+
+
+ 
+    
 }

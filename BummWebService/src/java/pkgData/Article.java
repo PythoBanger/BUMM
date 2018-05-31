@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement
 public class Article {
-    int artNr, onStock, decStock;
+    int artNr, onStock, changeStock;
     String name, description, artCategory;
     float price;
 
@@ -25,10 +25,10 @@ public class Article {
         this(artNr,onStock,0,name,description,artCategory,price);
     }
 
-    public Article(int artNr, int onStock, int decStock, String name, String description, String artCategory, float price) {
+    public Article(int artNr, int onStock, int changeStock, String name, String description, String artCategory, float price) {
         this.artNr = artNr;
         this.onStock = onStock;
-        this.decStock = decStock;
+        this.changeStock = changeStock;
         this.name = name;
         this.description = description;
         this.artCategory = artCategory;
@@ -84,19 +84,20 @@ public class Article {
         this.price = price;
     }
 
-    public int getDecStock() {
-        return decStock;
+    public int getChangeStock() {
+        return changeStock;
     }
 
-    public void setDecStock(int decStock) {
-        this.decStock = decStock;
+    public void setChangeStock(int changeStock) {
+        this.changeStock = changeStock;
     }
+
 
     
     
     @Override
     public String toString() {
-        return "Article{" + "artNr=" + artNr + ", onStock=" + onStock + ", decStock=" + decStock + ", name=" + name + ", description=" + description + ", artCategory=" + artCategory + ", price=" + price + '}';
+        return "Article{" + "artNr=" + artNr + ", onStock=" + onStock + ", decStock=" + changeStock + ", name=" + name + ", description=" + description + ", artCategory=" + artCategory + ", price=" + price + '}';
     }
     
     

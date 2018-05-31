@@ -57,7 +57,7 @@ public class RatingService {
     @GET
     @Path("/{artNr}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response getRatigsOfArticle(@PathParam("artNr") int artNr) throws Exception {
+    public Response getRatingsOfArticle(@PathParam("artNr") int artNr) throws Exception {
         return Response.ok(new Gson().toJson(db.getRatings(artNr))).build();
     }
 
