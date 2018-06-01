@@ -28,11 +28,12 @@ public class CategoryService {
     private UriInfo context;
     
     Database db = null;
-
+    Gson gson;
 
     public CategoryService() {
          try{
             db = Database.newInstance();
+            gson = new Gson();
         }catch(Exception ex){
             System.out.println("error while trying to create db.");
         }
@@ -42,7 +43,7 @@ public class CategoryService {
     @GET
     @Produces({MediaType.APPLICATION_JSON})
     public Response getAllCategories() throws Exception {   
-        return Response.ok(new Gson().toJson(db.getAllCategories())).build();       
+        return Response.ok(gson.toJson(db.getAllCategories())).build();       
     }
     
     

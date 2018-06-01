@@ -6,6 +6,7 @@
 package pkgData;
 
 import java.time.LocalDate;
+import java.util.Objects;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -55,6 +56,35 @@ public class RatingReport {
     @Override
     public String toString() {
         return "RatingReport{" + "reportedRating=" + reportedRating.getRatedArticle() + ", userWhoReported=" + userWhoReported.getUsername() + ", reportDate=" + reportDate + '}';
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 13 * hash + Objects.hashCode(this.reportedRating);
+        hash = 13 * hash + Objects.hashCode(this.userWhoReported);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final RatingReport other = (RatingReport) obj;
+        if (!Objects.equals(this.reportedRating, other.reportedRating)) {
+            return false;
+        }
+        if (!Objects.equals(this.userWhoReported, other.userWhoReported)) {
+            return false;
+        }
+        return true;
     }
 
     

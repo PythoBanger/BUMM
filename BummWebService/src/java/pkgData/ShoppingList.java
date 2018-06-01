@@ -6,6 +6,7 @@
 package pkgData;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -46,6 +47,31 @@ public class ShoppingList {
     @Override
     public String toString() {
         return "ShoppingList{" + "listOwner="  + listOwner.getUsername()+ ", articlesInList=" + articlesInList + '}';
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 67 * hash + Objects.hashCode(this.listOwner);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ShoppingList other = (ShoppingList) obj;
+        if (!Objects.equals(this.listOwner, other.listOwner)) {
+            return false;
+        }
+        return true;
     }
     
     

@@ -31,13 +31,14 @@ public class ArticleService {
     
     @Context
     private UriInfo context;
-    
+    Gson gson;
     Database db = null;
 
 
     public ArticleService() {
          try{
             db = Database.newInstance();
+            gson = new Gson();
         }catch(Exception ex){
             System.out.println("error while trying to create db.");
         }
@@ -47,7 +48,7 @@ public class ArticleService {
     @GET
     @Produces({MediaType.APPLICATION_JSON})
     public Response getArticles() throws Exception {  
-        return Response.ok().entity(new Gson().toJson(db.filterArticles("","Alle Artikel"))).build();       
+        return Response.ok().entity(gson.toJson(db.filterArticles("","Alle Artikel"))).build();       
     }
       
     @GET
@@ -59,7 +60,7 @@ public class ArticleService {
         if(a==null)
             r = Response.status(Response.Status.NOT_FOUND).entity("article not found").build();
         else
-            r = Response.ok().entity(new Gson().toJson(a)).build();
+            r = Response.ok().entity(gson.toJson(a)).build();
         
         return r;
     }
@@ -73,7 +74,7 @@ public class ArticleService {
         if(categoryName.length()==0)
                 categoryName="Alle Artikel"; //default category
         
-       return Response.ok().entity(new Gson().toJson(db.filterArticles(nameToFilter,categoryName))).build();
+       return Response.ok().entity(gson.toJson(db.filterArticles(nameToFilter,categoryName))).build();
     }
 
    

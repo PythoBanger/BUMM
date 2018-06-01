@@ -6,6 +6,7 @@
 package pkgData;
 
 import java.time.LocalDate;
+import java.util.Objects;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -20,7 +21,8 @@ public class User {
     private int zipCode;
     private byte[] imageData= new byte[0];
     private ShoppingList shoppingList;
-    
+
+
     public User() {
     }
 
@@ -156,5 +158,31 @@ public class User {
         return "User{" + "username=" + username + ", password=" + password + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email + ", location=" + location + ", address=" + address + ", role=" + role + ", birthdate=" + birthdate + ", zipCode=" + zipCode + ", imageData=" + imageData + ", status=" + status +'}';
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 13 * hash + Objects.hashCode(this.username);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final User other = (User) obj;
+        if (!Objects.equals(this.username, other.username)) {
+            return false;
+        }
+        return true;
+    }
+
+    
     
 }

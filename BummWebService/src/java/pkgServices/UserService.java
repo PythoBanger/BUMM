@@ -33,13 +33,14 @@ public class UserService {
     @Context
     private UriInfo context;
     Database db = null;
-
+    Gson gson;
     /**
      * Creates a new instance of UserService
      */
     public UserService() {
         try {
             db = Database.newInstance();
+            gson=new Gson();
         } catch (Exception ex) {
             System.out.println("error while trying to create db.");
         }
@@ -49,7 +50,7 @@ public class UserService {
     @GET
     @Produces({MediaType.APPLICATION_JSON})
     public Response getUsers() throws Exception {
-        return Response.ok().entity(new Gson().toJson(db.getAllUsers())).build();
+        return Response.ok().entity(gson.toJson(db.getAllUsers())).build();
     }
     
 
@@ -63,7 +64,7 @@ public class UserService {
         if (u == null) {
             r= Response.status(Response.Status.NOT_FOUND).entity("user not found").build();
         }else
-            r = Response.ok().entity(new Gson().toJson(u)).build();
+            r = Response.ok().entity(gson.toJson(u)).build();
 
         return r;
     }
@@ -73,7 +74,7 @@ public class UserService {
     @Produces({MediaType.APPLICATION_JSON})
     public Response filterUsers(@Context HttpHeaders httpHeaders) throws Exception {   
        String usernameToFilter = httpHeaders.getRequestHeader("username").get(0);        
-       return Response.ok().entity(new Gson().toJson(db.filterUsers(usernameToFilter))).build();
+       return Response.ok().entity(gson.toJson(db.filterUsers(usernameToFilter))).build();
     }
 
     @POST
@@ -84,7 +85,7 @@ public class UserService {
         Response r;
         User u = db.getUser(loginData.getUsername(), loginData.getPassword());
         if (u != null) 
-            r = Response.ok().entity(new Gson().toJson(u,User.class)).build();
+            r = Response.ok().entity(gson.toJson(u,User.class)).build();
         else
             r= Response.status(Response.Status.NOT_FOUND).entity("user not found").build();
         
@@ -97,7 +98,7 @@ public class UserService {
     public Response addNewUser(String newUser) throws Exception {
         Response r = Response.ok().build();        
         try {
-            db.addUser(new Gson().fromJson(newUser, User.class));
+            db.addUser(gson.fromJson(newUser, User.class));
         } catch (SQLException e) { //catches SQLIntegratonError so I already now what happened
             r= Response.status(Response.Status.BAD_REQUEST).entity("user already exists").build();
         } catch(Exception ex){
@@ -112,7 +113,7 @@ public class UserService {
     public Response updateUser(String userToUpdate) throws Exception {
         Response r = Response.ok().build();        
         try {
-            db.updateUser(new Gson().fromJson(userToUpdate, User.class));
+            db.updateUser(gson.fromJson(userToUpdate, User.class));
         } catch (Exception ex) {
             r= Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
         }

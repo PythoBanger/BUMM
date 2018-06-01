@@ -2,6 +2,24 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>file:/C:/Users/schueler/Desktop/POSSERVICE/BummWebService/src/java/pkgData/OrderArticle.java</file>
+            <file>file:/C:/Users/schueler/Desktop/POSSERVICE/BummWebService/src/java/pkgServices/RatingReportService.java</file>
+            <file>file:/C:/Users/schueler/Desktop/POSSERVICE/BummWebService/src/java/pkgData/RatingReport.java</file>
+            <file>file:/C:/Users/schueler/Desktop/POSSERVICE/BummWebService/src/java/pkgServices/OrderService.java</file>
+            <file>file:/C:/Users/schueler/Desktop/POSSERVICE/BummWebService/src/java/pkgServices/ArticleService.java</file>
+            <file>file:/C:/Users/schueler/Desktop/POSSERVICE/BummWebService/src/java/pkgData/User.java</file>
+            <file>file:/C:/Users/schueler/Desktop/POSSERVICE/BummWebService/src/java/pkgServices/RatingService.java</file>
+            <file>file:/C:/Users/schueler/Desktop/POSSERVICE/BummWebService/src/java/pkgData/Article.java</file>
+            <file>file:/C:/Users/schueler/Desktop/POSSERVICE/BummWebService/src/java/pkgData/Category.java</file>
+            <file>file:/C:/Users/schueler/Desktop/POSSERVICE/BummWebService/src/java/pkgServices/ShoppingListService.java</file>
+            <file>file:/C:/Users/schueler/Desktop/POSSERVICE/BummWebService/src/java/pkgData/Rating.java</file>
+            <file>file:/C:/Users/schueler/Desktop/POSSERVICE/BummWebService/src/java/pkgServices/CategoryService.java</file>
+            <file>file:/C:/Users/schueler/Desktop/POSSERVICE/BummWebService/src/java/pkgData/Database.java</file>
+            <file>file:/C:/Users/schueler/Desktop/POSSERVICE/BummWebService/src/java/pkgData/Order.java</file>
+            <file>file:/C:/Users/schueler/Desktop/POSSERVICE/BummWebService/src/java/pkgServices/UserService.java</file>
+            <file>file:/C:/Users/schueler/Desktop/POSSERVICE/BummWebService/src/java/pkgServices/ApplicationConfig.java</file>
+            <file>file:/C:/Users/schueler/Desktop/POSSERVICE/BummWebService/src/java/pkgData/ShoppingList.java</file>
+        </group>
     </open-files>
 </project-private>

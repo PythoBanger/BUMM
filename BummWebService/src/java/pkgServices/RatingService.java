@@ -34,13 +34,14 @@ public class RatingService {
     @Context
     private UriInfo context;
     Database db = null;
-
+    Gson gson;
     /**
      * Creates a new instance of UserService
      */
     public RatingService() {
         try {
             db = Database.newInstance();
+            gson = new Gson();
         } catch (Exception ex) {
             System.out.println("error while trying to create db.");
         }
@@ -50,7 +51,7 @@ public class RatingService {
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response getAllRatings() throws Exception {
-        return Response.ok(new Gson().toJson(db.getAllRatings())).build();
+        return Response.ok(gson.toJson(db.getAllRatings())).build();
     }
 
     //returns ratings of specific article for eg customer
@@ -58,7 +59,7 @@ public class RatingService {
     @Path("/{artNr}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response getRatingsOfArticle(@PathParam("artNr") int artNr) throws Exception {
-        return Response.ok(new Gson().toJson(db.getRatings(artNr))).build();
+        return Response.ok(gson.toJson(db.getRatings(artNr))).build();
     }
 
 
@@ -70,7 +71,7 @@ public class RatingService {
         Response r = Response.ok().build();
       
         try {
-            db.addRating(new Gson().fromJson(newR,Rating.class));
+            db.addRating(gson.fromJson(newR,Rating.class));
         }catch (SQLException e) {
             r= Response.status(Response.Status.BAD_REQUEST).entity("u've already rated this article.").build();;
         } catch(Exception ex){
@@ -86,7 +87,7 @@ public class RatingService {
     public Response updateRating(String rToUpdate) throws Exception{
         Response r = Response.ok().build();
         try{         
-            db.updateRating(new Gson().fromJson(rToUpdate,Rating.class));
+            db.updateRating(gson.fromJson(rToUpdate,Rating.class));
         }catch(Exception ex){
             r= Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();;
         }
@@ -95,12 +96,12 @@ public class RatingService {
     
     
     @DELETE
-    @Path("/delete/{artNr}/{username}") 
+    @Path("/{artNr}/{username}") 
     @Produces({MediaType.APPLICATION_JSON})
     public Response deleteRatingV2(@PathParam("artNr") int artNr, @PathParam("username") String username) throws Exception{
         Response isDeleted= Response.ok().build();
         try{    
-            db.deleteRating(db.getRating(username, artNr));
+            db.deleteRating(username, artNr);
         }catch(Exception ex){
             isDeleted = Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
         }

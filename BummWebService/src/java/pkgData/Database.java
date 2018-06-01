@@ -25,7 +25,7 @@ public class Database {
     // private static final String CONNECTSTRING = "jdbc:oracle:thin:@localhost:1521:orcl";
 
     private static final String CONNECTSTRING = "jdbc:oracle:thin:@212.152.179.117:1521:ora11g";
- //   private static final String CONNECTSTRING = "jdbc:oracle:thin:@192.168.128.152:1521:ora11g";
+    //   private static final String CONNECTSTRING = "jdbc:oracle:thin:@192.168.128.152:1521:ora11g";
     private static final String USER = "d4a10";
     private static final String PASSWD = "d4a";
     private Connection conn = null;
@@ -65,7 +65,7 @@ public class Database {
         return collUsers;
     }
 
-    public Collection<User> filterUsers(String usernameToFilter) throws Exception{
+    public Collection<User> filterUsers(String usernameToFilter) throws Exception {
         ArrayList<User> collUsers = new ArrayList<>();
 
         conn = createConnection();
@@ -77,10 +77,9 @@ public class Database {
             collUsers.add(getUserValues(rs));
         }
         conn.close();
-        return collUsers;    
+        return collUsers;
     }
-    
-    
+
     public User getUser(String username) throws Exception {
         conn = createConnection();
         String select = "SELECT * FROM BummUser WHERE username=?";
@@ -130,26 +129,9 @@ public class Database {
         return newUser;
     }
 
-    private User checkIfEmailIstUnique(String email) throws Exception {
-        String select = "SELECT * FROM BummUser WHERE email=?";
-        PreparedStatement stmt = conn.prepareStatement(select);
-        stmt.setString(1, email);
-        ResultSet rs = stmt.executeQuery();
-        User foundUser = null;
-        while (rs.next()) {
-            foundUser = getUserValues(rs);
-        }
-        return foundUser;
-    }
-
     //TODO:and see how to make imagePic
     public void addUser(User newUser) throws Exception {
         conn = createConnection();
-        User u = checkIfEmailIstUnique(newUser.getEmail());
-        if (u != null) {
-            throw new Exception("email already exists!");
-        }
-
         String select = "INSERT INTO BummUser VALUES(?,?,?,?,?,?,?,?,?,'customer',?,'active')"; //customer ist fix. nicht veränderbar
         PreparedStatement stmt = conn.prepareStatement(select);
         stmt.setString(1, newUser.getUsername());
@@ -162,10 +144,10 @@ public class Database {
         stmt.setInt(8, newUser.getZipCode());
         stmt.setString(9, newUser.getAddress());
         byte[] imgData = newUser.getImageData();
-        if (imgData != null) //if profile pic exsits save
+        if (imgData != null) //if profile pic exsits save      
         {
             stmt.setBinaryStream(10, new ByteArrayInputStream(imgData), imgData.length);
-        } else //else dont. 
+        } else //else dont.         
         {
             stmt.setNull(10, Types.BLOB);
         }
@@ -174,15 +156,8 @@ public class Database {
         conn.close();
     }
 
-    //TODO: Service delete LocalDate.now() and see how to update imagePic
     public void updateUser(User userToUpdate) throws Exception {
         conn = createConnection();
-        User u = checkIfEmailIstUnique(userToUpdate.getEmail());
-        if (u != null) {
-            if (!userToUpdate.getUsername().equals(u.getUsername())) {
-                throw new Exception("email already belonges to someone else");
-            }
-        }
         String select = "UPDATE BummUser SET password=?, firstname=?, lastname=?, email=?, birthdate=?"
                 + ", location=?, zipcode=?, address=?, profilePic=?, status=? WHERE username=?"; //customer ist fix. nicht veränderbar
         PreparedStatement stmt = conn.prepareStatement(select);
@@ -255,7 +230,6 @@ public class Database {
 
     }
 
-    //change when doing admin.... as decstock must be +
     public void updateArticle(Article articleToUpdate) throws Exception {
         conn = createConnection();
 
@@ -294,20 +268,7 @@ public class Database {
         return collArticles;
     }
 
-    /*public void decreaseOnStock(Article art) throws Exception {
-       
-        conn = createConnection();
 
-        String select = "UPDATE Article SET  onStock=onStock-?  WHERE artNr = ?";
-        PreparedStatement stmt = conn.prepareStatement(select);
-
-        stmt.setInt(1, art.getDecStock());
-        stmt.setInt(2, art.getArtNr());
-        stmt.executeQuery();
-        conn.close();
-    }*/
-
-    //toDo: think how the best return should be..... wheter like now or using the arraylist ask ortner
     public Collection<Category> getAllCategories() throws Exception {
         ArrayList<Category> collCategories = new ArrayList<>();
 
@@ -362,7 +323,6 @@ public class Database {
         conn.close();
         return a;
     }
-
 
     public void deleteArticleFromShoppingList(String username, int artNr) throws Exception {
         conn = createConnection();
@@ -422,7 +382,6 @@ public class Database {
         return r;
     }
 
-
     public void addRating(Rating newRating) throws Exception {
         conn = createConnection();
 
@@ -452,26 +411,19 @@ public class Database {
         conn.close();
     }
 
-    public void deleteRating(Rating ratingToDelete) throws Exception{
-        if(ratingToDelete==null)
-            throw new Exception("no rating found");
-        
-        deleteRatingReport(ratingToDelete.getUserWhoRated().getUsername(),(ratingToDelete.getRatedArticle().getArtNr())); //if user deletes hiss comment: no need to keep his reports; if admin deletes reported rating which calls this function it also automaticcalyy deletes the reports of it
+    public void deleteRating(String username,int artNr) throws Exception {
+
+        deleteRatingReport( username, artNr); //if user deletes hiss comment: no need to keep his reports; if admin deletes reported rating which calls this function it also automaticcalyy deletes the reports of it
         conn = createConnection();
-        String select = "DELETE FROM Rating WHERE artNr = ? AND username=?"; 
+        String select = "DELETE FROM Rating WHERE artNr = ? AND username=?";
         PreparedStatement stmt = conn.prepareStatement(select);
-        stmt.setInt(1, ratingToDelete.getRatedArticle().getArtNr());
-        stmt.setString(2, ratingToDelete.getUserWhoRated().getUsername());
+        stmt.setInt(1, artNr);
+        stmt.setString(2, username);
         stmt.executeQuery();
         conn.close();
     }
-    
-    
 
-    
-    
-    
-    public Collection<RatingReport> getAllRatingsReports() throws Exception{
+    public Collection<RatingReport> getAllRatingsReports() throws Exception {
         ArrayList<RatingReport> collRatingsReports = new ArrayList<>();
 
         conn = createConnection();
@@ -483,14 +435,14 @@ public class Database {
         conn.close();
         return collRatingsReports;
     }
-    
+
     private RatingReport getRatingReportValues(ResultSet rs) throws Exception {
-        Rating r = getRating(rs.getString("reportedUser"),rs.getInt("artNr"));
-        RatingReport rp = new RatingReport(r,getUser(rs.getString("userWhoReported")),rs.getDate("reportDate").toLocalDate());
+        Rating r = getRating(rs.getString("reportedUser"), rs.getInt("artNr"));
+        RatingReport rp = new RatingReport(r, getUser(rs.getString("userWhoReported")), rs.getDate("reportDate").toLocalDate());
         return rp;
     }
 
-    public void addRatingReport(RatingReport newRatingReport) throws Exception{
+    public void addRatingReport(RatingReport newRatingReport) throws Exception {
         conn = createConnection();
 
         String select = "INSERT INTO RatingReport VALUES(?,?,?,?)";
@@ -500,13 +452,13 @@ public class Database {
         stmt.setString(3, newRatingReport.getUserWhoReported().getUsername());
         stmt.setDate(4, Date.valueOf(LocalDate.now()));
         stmt.executeQuery();
-        conn.close();  
+        conn.close();
     }
-    
-    public void deleteRatingReport(String reportedUser, int artNr) throws Exception{
+
+    public void deleteRatingReport(String reportedUser, int artNr) throws Exception {
         conn = createConnection();
 
-        String select = "DELETE FROM RatingReport WHERE artNr = ? AND reportedUser=?"; 
+        String select = "DELETE FROM RatingReport WHERE artNr = ? AND reportedUser=?";
         PreparedStatement stmt = conn.prepareStatement(select);
         stmt.setInt(1, artNr);
         stmt.setString(2, reportedUser);
@@ -514,7 +466,117 @@ public class Database {
         conn.close();
     }
 
+    public void addOrder(Order o) throws Exception {
+        int orderId = getNextOrderId();
+        String username = o.getUserWhoOrdered().getUsername();
 
- 
+        conn = createConnection();
+
+        String select = "INSERT INTO BummOrder VALUES(?,?,?,?)";
+        String select2 = "UPDATE Article SET onStock=onStock-? WHERE artNr=?";
+
+        PreparedStatement stmtOrder = conn.prepareStatement(select);
+        PreparedStatement stmtArticle = conn.prepareStatement(select2);
+
+        for (OrderArticle oa : o.getAllOrderesArticles()) {
+            int artNr = oa.getOrderedArticle().getArtNr();
+            int amount = oa.getAmount();
+
+            stmtArticle.setInt(1, amount);
+            stmtArticle.setInt(2, artNr);
+            stmtArticle.executeQuery(); //first i decrease onstock (bc in article table there is a check constraint => no need to check it here if onstock is ok..)
+
+            stmtOrder.setInt(1, orderId);
+            stmtOrder.setString(2, username);
+            stmtOrder.setInt(3, artNr);
+            stmtOrder.setInt(4, amount);
+            stmtOrder.executeQuery();
+        }
+        conn.close();
+    }
+
+    private int getNextOrderId() throws Exception {
+        int nextId = 0;
+        conn = createConnection();
+        PreparedStatement pst = conn.prepareStatement("SELECT seqOrder.NEXTVAL from dual");
+        ResultSet rs = pst.executeQuery();
+        if (rs.next()) {
+            nextId = rs.getInt(1);
+        }
+        conn.close();
+        return nextId;
+    }
+
+    public Collection<Order> getAllOrders() throws Exception {
+        conn = createConnection();
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM BummOrder order by orderId");
+        ResultSet rs = stmt.executeQuery();
+        ArrayList<Order> allOrders = (ArrayList<Order>) getOrderValues(rs);
+        conn.close();
+        return allOrders;
+    }
+
+    private Collection<Order> getOrderValues(ResultSet rs) throws Exception{
+        ArrayList<Order> allOrders = new ArrayList<>();
+        Order curOrder = null;
+        while (rs.next()) {
+            Order o = new Order(rs.getInt("orderId"), getUser(rs.getString("username")));
+            if (curOrder == null) 
+                curOrder = o;
+
+            if (!(curOrder.equals(o))) {
+                allOrders.add(curOrder);
+                curOrder = o;
+            }
+            OrderArticle oa = new OrderArticle(getArticle(rs.getInt("artNr")), rs.getInt("amount"));
+            curOrder.addArticle(oa);
+
+        }
+        allOrders.add(curOrder);
+        return allOrders;
+        
+        
+        
+    }
+
+    public Collection<Order> getAllOrdersFromUser(String username) throws Exception {
+        conn = createConnection();
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM BummOrder WHERE username=? order by orderId");
+        stmt.setString(1,username);
+        ResultSet rs = stmt.executeQuery();
+        ArrayList<Order> allOrders = (ArrayList<Order>) getOrderValues(rs);
+        conn.close();
+        return allOrders;
+    }
     
+    public void deleteOrder(int orderId) throws Exception {
+        conn = createConnection();
+
+        String select = "DELETE FROM BummOrder WHERE orderId=?";
+        PreparedStatement stmt = conn.prepareStatement(select);
+        stmt.setInt(1, orderId);
+        stmt.executeQuery();
+        conn.close();
+    }
+
+    public void deleteSpecificArtFromOrder(int orderId, int artNr) throws Exception {
+        conn = createConnection();
+
+        String select = "DELETE FROM BummOrder WHERE orderId=? and artNr=?";
+        PreparedStatement stmt = conn.prepareStatement(select);
+        stmt.setInt(1, orderId);
+        stmt.setInt(2, artNr);
+        stmt.executeQuery();
+        conn.close();
+    }
+
+    public Object getSpecificOrder(int orderId) throws Exception{
+        conn = createConnection();
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM BummOrder WHERE orderId=? order by orderId");
+        stmt.setInt(1, orderId);
+        ResultSet rs = stmt.executeQuery();
+        ArrayList<Order> allOrders = (ArrayList<Order>) getOrderValues(rs);
+        conn.close();
+        return allOrders.get(0);
+    }
 }

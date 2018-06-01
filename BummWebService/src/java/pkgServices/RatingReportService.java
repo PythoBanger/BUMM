@@ -28,7 +28,7 @@ import pkgData.RatingReport;
 @Path("ratingReports")
 public class RatingReportService {
 
-    
+    Gson gson;
     Database db = null;
 
     /**
@@ -37,6 +37,7 @@ public class RatingReportService {
     public RatingReportService() {
         try {
             db = Database.newInstance();
+            gson = new Gson();
         } catch (Exception ex) {
             System.out.println("error while trying to create db.");
         }
@@ -45,7 +46,7 @@ public class RatingReportService {
     @GET
     @Produces({MediaType.APPLICATION_JSON})
     public Response getAllRatingsReports() throws Exception {
-        return Response.ok(new Gson().toJson(db.getAllRatingsReports())).build();
+        return Response.ok(gson.toJson(db.getAllRatingsReports())).build();
     }
     
     
@@ -53,9 +54,8 @@ public class RatingReportService {
     @Produces({MediaType.APPLICATION_JSON})
     public Response addNewRatingReport(String newRP) throws Exception {
         Response r = Response.ok().build();
-        System.out.println("kjhkjhkhkj");
         try {
-            db.addRatingReport(new Gson().fromJson(newRP,RatingReport.class));
+            db.addRatingReport(gson.fromJson(newRP,RatingReport.class));
         }catch(SQLException ex) {
             r= Response.status(Response.Status.BAD_REQUEST).entity("u've already reported the rating.").build();;
         } catch(Exception ex){
