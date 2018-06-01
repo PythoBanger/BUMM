@@ -76,12 +76,12 @@ CREATE TABLE RatingReport(
 );
 
 CREATE SEQUENCE seqOrder START WITH 1 INCREMENT BY 1;
-CREATE TABLE BummOrder( /*order not allowed as table*/
-  orderId INTEGER PRIMARY KEY,
+CREATE TABLE BummOrder( 
+  orderId INTEGER,
   username VARCHAR2(50),
   artNr INTEGER,
   amount INTEGER,
-  totalPrice FLOAT, /*per article*/
+  CONSTRAINT pk_Ord PRIMARY KEY(orderId,username,artNr),
   CONSTRAINT fk_BU4 FOREIGN KEY(username) REFERENCES BummUser(username),
   CONSTRAINT fk_Art4 FOREIGN KEY(artNr) REFERENCES Article(artNr)
 );
