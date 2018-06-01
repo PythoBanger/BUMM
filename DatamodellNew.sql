@@ -83,7 +83,8 @@ CREATE TABLE BummOrder(
   amount INTEGER,
   CONSTRAINT pk_Ord PRIMARY KEY(orderId,username,artNr),
   CONSTRAINT fk_BU4 FOREIGN KEY(username) REFERENCES BummUser(username),
-  CONSTRAINT fk_Art4 FOREIGN KEY(artNr) REFERENCES Article(artNr)
+  CONSTRAINT fk_Art4 FOREIGN KEY(artNr) REFERENCES Article(artNr),
+  CONSTRAINT check_ammount CHECK (amount > 0) /*u cant have ordered an article with quantityy of 0....*/
 );
 
 CREATE TABLE ShoppingList(
