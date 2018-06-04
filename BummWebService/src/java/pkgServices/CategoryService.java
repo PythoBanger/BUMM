@@ -46,6 +46,12 @@ public class CategoryService {
         return Response.ok(gson.toJson(db.getAllCategories())).build();       
     }
     
-    
+    //gets categories which are not parent = lowest children (to add article) 
+    @GET
+    @Path("/lowest")
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response getCategoriesWhichAreNotParents() throws Exception {   
+        return Response.ok(gson.toJson(db.getLowestCategories())).build();       
+    }
 
 }

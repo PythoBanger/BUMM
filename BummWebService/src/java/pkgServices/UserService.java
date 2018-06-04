@@ -50,6 +50,8 @@ public class UserService {
     @GET
     @Produces({MediaType.APPLICATION_JSON})
     public Response getUsers() throws Exception {
+        
+        System.out.println("adsfdsafasf");
         return Response.ok().entity(gson.toJson(db.getAllUsers())).build();
     }
     

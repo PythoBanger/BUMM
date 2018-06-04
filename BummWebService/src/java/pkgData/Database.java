@@ -25,7 +25,7 @@ public class Database {
     // private static final String CONNECTSTRING = "jdbc:oracle:thin:@localhost:1521:orcl";
 
     private static final String CONNECTSTRING = "jdbc:oracle:thin:@212.152.179.117:1521:ora11g";
-    //   private static final String CONNECTSTRING = "jdbc:oracle:thin:@192.168.128.152:1521:ora11g";
+   // private static final String CONNECTSTRING = "jdbc:oracle:thin:@192.168.128.152:1521:ora11g";
     private static final String USER = "d4a10";
     private static final String PASSWD = "d4a";
     private Connection conn = null;
@@ -282,6 +282,21 @@ public class Database {
         return collCategories;
     }
 
+    
+    public Collection<Category> getLowestCategories() throws Exception{
+              ArrayList<Category> collCategories = new ArrayList<>();
+
+        conn = createConnection();
+        PreparedStatement stmt = conn.prepareStatement(" select level, curCategory,parentCategory from Category where level = (select max(level) from Category start with curCategory='Alle Artikel' connect by prior curCategory = parentCategory) start with curCategory='Alle Artikel' connect by prior curCategory = parentCategory order siblings by parentCategory");
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            collCategories.add(new Category(rs.getString(2), rs.getString(3))); //current,parent
+        }
+        conn.close();
+        return collCategories; 
+    }
+    
+    
     public ShoppingList getShoppingList(String username) throws Exception {
         ShoppingList sp = new ShoppingList(this.getUser(username));
         conn = createConnection();
@@ -472,7 +487,7 @@ public class Database {
 
         conn = createConnection();
 
-        String select = "INSERT INTO BummOrder VALUES(?,?,?,?)";
+        String select = "INSERT INTO BummOrder VALUES(?,?,?,?,?)";
         String select2 = "UPDATE Article SET onStock=onStock-? WHERE artNr=?";
 
         PreparedStatement stmtOrder = conn.prepareStatement(select);
@@ -490,6 +505,7 @@ public class Database {
             stmtOrder.setString(2, username);
             stmtOrder.setInt(3, artNr);
             stmtOrder.setInt(4, amount);
+            stmtOrder.setDate(5, Date.valueOf(LocalDate.now()));
             stmtOrder.executeQuery();
         }
         conn.close();
@@ -520,7 +536,8 @@ public class Database {
         ArrayList<Order> allOrders = new ArrayList<>();
         Order curOrder = null;
         while (rs.next()) {
-            Order o = new Order(rs.getInt("orderId"), getUser(rs.getString("username")));
+            Order o = new Order(rs.getInt("orderId"), getUser(rs.getString("username")),rs.getDate("orderDate").toLocalDate());
+            
             if (curOrder == null) 
                 curOrder = o;
 
@@ -579,4 +596,5 @@ public class Database {
         conn.close();
         return allOrders.get(0);
     }
+
 }

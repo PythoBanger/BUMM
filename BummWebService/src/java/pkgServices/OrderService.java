@@ -46,6 +46,7 @@ public class OrderService {
     @GET //returns every order from a specific user
     @Produces({MediaType.APPLICATION_JSON})
     public Response getAllOrders() throws Exception {
+        System.out.println("kjdshfsa");
         return Response.ok().entity(gson.toJson(db.getAllOrders())).build();
     } 
     
