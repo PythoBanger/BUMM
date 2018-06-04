@@ -133,3 +133,11 @@ create or replace view allCatWithArt as (select c.parentcategory parent, c.curca
       start with curCategory='Alle Artikel' 
    connect by prior curCategory = parentCategory
    order siblings by parentCategory;
+                                
+                            
+                                /*gets lowest children (for add article)*/
+         select level, curCategory,parentCategory from Category where level = (select max(level) from Category start with curCategory='Alle Artikel' connect by prior curCategory = parentCategory)
+      start with curCategory='Alle Artikel' 
+   connect by prior curCategory = parentCategory 
+   order siblings by parentCategory ;
+  
