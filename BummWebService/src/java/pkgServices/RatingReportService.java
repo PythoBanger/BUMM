@@ -46,6 +46,8 @@ public class RatingReportService {
     @GET
     @Produces({MediaType.APPLICATION_JSON})
     public Response getAllRatingsReports() throws Exception {
+        System.out.println("kjhkhkhkj");
+        System.out.println(""+db.getAllRatingsReports());
         return Response.ok(gson.toJson(db.getAllRatingsReports())).build();
     }
     

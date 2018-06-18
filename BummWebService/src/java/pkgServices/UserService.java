@@ -83,9 +83,11 @@ public class UserService {
     @Path("/login")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    public Response login(User loginData) throws Exception {
+    public Response login(String loginDataString) throws Exception {
         Response r;
-        User u = db.getUser(loginData.getUsername(), loginData.getPassword());
+        User u = gson.fromJson(loginDataString, User.class);
+        
+        u = db.getUser(u.getUsername(), u.getPassword());
         if (u != null) 
             r = Response.ok().entity(gson.toJson(u,User.class)).build();
         else

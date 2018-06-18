@@ -24,8 +24,8 @@ import java.util.Collection;
 public class Database {
     // private static final String CONNECTSTRING = "jdbc:oracle:thin:@localhost:1521:orcl";
 
-    private static final String CONNECTSTRING = "jdbc:oracle:thin:@212.152.179.117:1521:ora11g";
-   // private static final String CONNECTSTRING = "jdbc:oracle:thin:@192.168.128.152:1521:ora11g";
+   //    private static final String CONNECTSTRING = "jdbc:oracle:thin:@212.152.179.117:1521:ora11g";
+    private static final String CONNECTSTRING = "jdbc:oracle:thin:@192.168.128.152:1521:ora11g";
     private static final String USER = "d4a10";
     private static final String PASSWD = "d4a";
     private Connection conn = null;
@@ -188,7 +188,7 @@ public class Database {
         ArrayList<Article> collArticles = new ArrayList<>();
 
         conn = createConnection();
-        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM Article ORDER BY artNr");
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM Article WHERE onStock != 0 ORDER BY artNr");
         ResultSet rs = stmt.executeQuery();
         while (rs.next()) {
             collArticles.add(getArticleValues(rs));
@@ -248,6 +248,18 @@ public class Database {
 
     }
 
+    public Collection<Article> getArticlesToRestock() throws Exception{
+        conn = createConnection();
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM Article WHERE onStock=0");
+        ResultSet rs = stmt.executeQuery();
+        ArrayList<Article> foundArticles = new ArrayList<>();
+        while (rs.next()) {
+            foundArticles.add(getArticleValues(rs));
+        }
+        conn.close();
+        return foundArticles;
+    }
+
     public Collection<Article> filterArticles(String nameToFilter, String categoryName) throws Exception {
         ArrayList<Article> collArticles = new ArrayList<>();
 
@@ -268,7 +280,6 @@ public class Database {
         return collArticles;
     }
 
-
     public Collection<Category> getAllCategories() throws Exception {
         ArrayList<Category> collCategories = new ArrayList<>();
 
@@ -282,9 +293,8 @@ public class Database {
         return collCategories;
     }
 
-    
-    public Collection<Category> getLowestCategories() throws Exception{
-              ArrayList<Category> collCategories = new ArrayList<>();
+    public Collection<Category> getLowestCategories() throws Exception {
+        ArrayList<Category> collCategories = new ArrayList<>();
 
         conn = createConnection();
         PreparedStatement stmt = conn.prepareStatement(" select level, curCategory,parentCategory from Category where level = (select max(level) from Category start with curCategory='Alle Artikel' connect by prior curCategory = parentCategory) start with curCategory='Alle Artikel' connect by prior curCategory = parentCategory order siblings by parentCategory");
@@ -293,10 +303,9 @@ public class Database {
             collCategories.add(new Category(rs.getString(2), rs.getString(3))); //current,parent
         }
         conn.close();
-        return collCategories; 
+        return collCategories;
     }
-    
-    
+
     public ShoppingList getShoppingList(String username) throws Exception {
         ShoppingList sp = new ShoppingList(this.getUser(username));
         conn = createConnection();
@@ -426,9 +435,9 @@ public class Database {
         conn.close();
     }
 
-    public void deleteRating(String username,int artNr) throws Exception {
+    public void deleteRating(String username, int artNr) throws Exception {
 
-        deleteRatingReport( username, artNr); //if user deletes hiss comment: no need to keep his reports; if admin deletes reported rating which calls this function it also automaticcalyy deletes the reports of it
+        deleteRatingReport(username, artNr); //if user deletes hiss comment: no need to keep his reports; if admin deletes reported rating which calls this function it also automaticcalyy deletes the reports of it
         conn = createConnection();
         String select = "DELETE FROM Rating WHERE artNr = ? AND username=?";
         PreparedStatement stmt = conn.prepareStatement(select);
@@ -441,7 +450,9 @@ public class Database {
     public Collection<RatingReport> getAllRatingsReports() throws Exception {
         ArrayList<RatingReport> collRatingsReports = new ArrayList<>();
 
+        
         conn = createConnection();
+        
         PreparedStatement stmt = conn.prepareStatement("SELECT * FROM RatingReport");
         ResultSet rs = stmt.executeQuery();
         while (rs.next()) {
@@ -532,14 +543,15 @@ public class Database {
         return allOrders;
     }
 
-    private Collection<Order> getOrderValues(ResultSet rs) throws Exception{
+    private Collection<Order> getOrderValues(ResultSet rs) throws Exception {
         ArrayList<Order> allOrders = new ArrayList<>();
         Order curOrder = null;
         while (rs.next()) {
-            Order o = new Order(rs.getInt("orderId"), getUser(rs.getString("username")),rs.getDate("orderDate").toLocalDate());
-            
-            if (curOrder == null) 
+            Order o = new Order(rs.getInt("orderId"), getUser(rs.getString("username")), rs.getDate("orderDate").toLocalDate());
+
+            if (curOrder == null) {
                 curOrder = o;
+            }
 
             if (!(curOrder.equals(o))) {
                 allOrders.add(curOrder);
@@ -551,21 +563,19 @@ public class Database {
         }
         allOrders.add(curOrder);
         return allOrders;
-        
-        
-        
+
     }
 
     public Collection<Order> getAllOrdersFromUser(String username) throws Exception {
         conn = createConnection();
         PreparedStatement stmt = conn.prepareStatement("SELECT * FROM BummOrder WHERE username=? order by orderId");
-        stmt.setString(1,username);
+        stmt.setString(1, username);
         ResultSet rs = stmt.executeQuery();
         ArrayList<Order> allOrders = (ArrayList<Order>) getOrderValues(rs);
         conn.close();
         return allOrders;
     }
-    
+
     public void deleteOrder(int orderId) throws Exception {
         conn = createConnection();
 
@@ -587,7 +597,7 @@ public class Database {
         conn.close();
     }
 
-    public Object getSpecificOrder(int orderId) throws Exception{
+    public Object getSpecificOrder(int orderId) throws Exception {
         conn = createConnection();
         PreparedStatement stmt = conn.prepareStatement("SELECT * FROM BummOrder WHERE orderId=? order by orderId");
         stmt.setInt(1, orderId);
@@ -595,6 +605,22 @@ public class Database {
         ArrayList<Order> allOrders = (ArrayList<Order>) getOrderValues(rs);
         conn.close();
         return allOrders.get(0);
+    }
+
+    public Category getParentCategory(String childC) throws Exception {
+        Category parentCat = null;
+
+        conn = createConnection();
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM Category WHERE curCategory = ?");
+        stmt.setString(1,childC);
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            parentCat = new Category(rs.getString(1), rs.getString(2)); //current,parent
+        }
+        conn.close();
+     
+        return parentCat;
+    
     }
 
 }

@@ -20,7 +20,7 @@ public class RatingReport {
     private LocalDate reportDate;
 
     public RatingReport() {
-        
+        this(null,null,LocalDate.now());
     }
 
     public RatingReport(Rating reportedRating, User userWhoReported, LocalDate reportDate) {
@@ -55,7 +55,11 @@ public class RatingReport {
 
     @Override
     public String toString() {
+       // return"";
+       if(userWhoReported!=null && reportedRating !=null)
         return "RatingReport{" + "reportedRating=" + reportedRating.getRatedArticle() + ", userWhoReported=" + userWhoReported.getUsername() + ", reportDate=" + reportDate + '}';
+       else
+        return "RatingReport{" + "repeportDate=" + reportDate + '}';
     }
 
     @Override

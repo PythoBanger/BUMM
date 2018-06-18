@@ -21,6 +21,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import pkgData.Article;
 import pkgData.Database;
+import pkgData.User;
 
 /**
  *
@@ -48,7 +49,7 @@ public class ArticleService {
     @GET
     @Produces({MediaType.APPLICATION_JSON})
     public Response getArticles() throws Exception {  
-        return Response.ok().entity(gson.toJson(db.filterArticles("","Alle Artikel"))).build();       
+        return Response.ok().entity(gson.toJson(db.getAllArticles())).build();       
     }
       
     @GET
@@ -57,6 +58,7 @@ public class ArticleService {
     public Response getArticle(@PathParam("artNr") int artNr) throws Exception {   
         Article a= db.getArticle(artNr);
         Response r =null;
+        System.out.println(":"+a);
         if(a==null)
             r = Response.status(Response.Status.NOT_FOUND).entity("article not found").build();
         else
@@ -65,6 +67,7 @@ public class ArticleService {
         return r;
     }
 
+    
     @GET
     @Path("/filter")
     @Produces({MediaType.APPLICATION_JSON})
@@ -78,12 +81,17 @@ public class ArticleService {
     }
 
    
+    @GET
+    @Path("/restock")
+    public Response getArticlesToRestock() throws Exception {   
+       return Response.ok().entity(gson.toJson(db.getArticlesToRestock())).build();
+    }
     @POST
     @Consumes({MediaType.APPLICATION_JSON})
-    public Response addNewArticle(Article newArticle) throws Exception{
+    public Response addNewArticle(String newArticle) throws Exception{
         Response r = Response.ok().build();
         try{
-            db.addArticle(newArticle);
+            db.addArticle(gson.fromJson(newArticle, Article.class));
         }catch(Exception ex){
             r = Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
         }
@@ -94,10 +102,10 @@ public class ArticleService {
     //updates article. not finished eg admin and onstock
     @PUT
     @Consumes({MediaType.APPLICATION_JSON})
-    public Response updateArticle(Article articleToUpdate) throws Exception{
+    public Response updateArticle(String articleToUpdate) throws Exception{
         Response r = Response.ok().build();
         try{
-            db.updateArticle(articleToUpdate);
+            db.updateArticle(gson.fromJson(articleToUpdate, Article.class));
         }catch(Exception ex){
             r = Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
         }

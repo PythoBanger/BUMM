@@ -8,6 +8,7 @@ package pkgServices;
 import com.google.gson.Gson;
 import java.util.Collection;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
@@ -51,7 +52,17 @@ public class CategoryService {
     @Path("/lowest")
     @Produces({MediaType.APPLICATION_JSON})
     public Response getCategoriesWhichAreNotParents() throws Exception {   
+        System.out.println("h");
         return Response.ok(gson.toJson(db.getLowestCategories())).build();       
+    }
+
+    //gets categories which are not parent = lowest children (to add article) 
+    @POST
+    @Path("/getParent")
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response getParentOfChild(String childC) throws Exception {   
+        System.out.println("h"+db.getParentCategory(childC));
+        return Response.ok(gson.toJson(db.getParentCategory(childC))).build();       
     }
 
 }

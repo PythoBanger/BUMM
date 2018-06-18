@@ -49,7 +49,7 @@ public class RatingService {
 
     //get all ratings of each article for eg. admin want too see every article to check if no bad words are..
     @GET
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces({MediaType.APPLICATION_JSON})
     public Response getAllRatings() throws Exception {
         return Response.ok(gson.toJson(db.getAllRatings())).build();
     }
@@ -57,7 +57,7 @@ public class RatingService {
     //returns ratings of specific article for eg customer
     @GET
     @Path("/{artNr}")
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces({MediaType.APPLICATION_JSON})
     public Response getRatingsOfArticle(@PathParam("artNr") int artNr) throws Exception {
         return Response.ok(gson.toJson(db.getRatings(artNr))).build();
     }
