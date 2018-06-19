@@ -1,74 +1,40 @@
-    private int orderId;
-    private User userWhoOrdered;
-    private LocalDate orderDate;
-    private ArrayList<OrderArticle> allOrderesArticles = new ArrayList<>();
-    public Order() {
-    }
-    
-    
-    
+   private Article orderedArticle;
+    private int amount;
 
-    public Order(User userWhoOrdered) { 
-        this(-99,userWhoOrdered);
+    public OrderArticle() {
     }
 
-    public Order(int orderId, User userWhoOrdered) {
-        this.orderId = orderId;
-        this.userWhoOrdered = userWhoOrdered;
-    }
-    
-    public Order(int orderId, User userWhoOrdered, LocalDate orderDate) {
-        this.orderId = orderId;
-        this.userWhoOrdered = userWhoOrdered;
-        this.orderDate = orderDate;
-    }
-    
-
-    public LocalDate getOrderDate() {
-        return orderDate;
-    }
-
-    public void setOrderDate(LocalDate orderDate) {
-        this.orderDate = orderDate;
+    public OrderArticle(Article orderedArticle, int amount) {
+        this.orderedArticle = orderedArticle;
+        this.amount = amount;
     }
 
     
-    public int getOrderId() {
-        return orderId;
+    public Article getOrderedArticle() {
+        return orderedArticle;
     }
 
-    public void setOrderId(int orderId) {
-        this.orderId = orderId;
+    public void setOrderedArticle(Article orderedArticle) {
+        this.orderedArticle = orderedArticle;
     }
 
-    public User getUserWhoOrdered() {
-        return userWhoOrdered;
+    public int getAmount() {
+        return amount;
     }
 
-    public void setUserWhoOrdered(User userWhoOrdered) {
-        this.userWhoOrdered = userWhoOrdered;
+    public void setAmount(int amount) {
+        this.amount = amount;
     }
 
-    public ArrayList<OrderArticle> getAllOrderesArticles() {
-        return allOrderesArticles;
-    }
-
-    public void setAllOrderesArticles(ArrayList<OrderArticle> allOrderesArticles) {
-        this.allOrderesArticles = allOrderesArticles;
-    }
-
-    public void addArticle(OrderArticle oa) throws Exception{
-        this.allOrderesArticles.add(oa);
-    }
     @Override
     public String toString() {
-        return "Order{" + "orderId=" + orderId + ", userWhoOrdered=" + userWhoOrdered + ", allOrderesArticles=" + allOrderesArticles + '}';
+        return "OrderArticle{" + "orderedArticle=" + orderedArticle + ", amount=" + amount + '}';
     }
 
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 41 * hash + this.orderId;
+        int hash = 5;
+        hash = 29 * hash + Objects.hashCode(this.orderedArticle);
         return hash;
     }
 
@@ -83,13 +49,10 @@
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Order other = (Order) obj;
-        if (this.orderId != other.orderId) {
+        final OrderArticle other = (OrderArticle) obj;
+        if (!Objects.equals(this.orderedArticle, other.orderedArticle)) {
             return false;
         }
         return true;
     }
-
-
     
-  
