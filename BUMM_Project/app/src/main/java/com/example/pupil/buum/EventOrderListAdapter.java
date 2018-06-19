@@ -10,9 +10,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.pupil.buum.pkgData.Article;
 import com.example.pupil.buum.pkgData.Category;
 import com.example.pupil.buum.pkgData.Database;
+import com.example.pupil.buum.pkgData.OrderArticle;
 
 import java.util.ArrayList;
 
@@ -20,13 +20,13 @@ import java.util.ArrayList;
  * Created by Melanie on 5/14/18.
  */
 
-public class EventArticleListAdapter extends BaseAdapter {
-    private ArrayList<Article> singleRow;
+public class EventOrderListAdapter extends BaseAdapter {
+    private ArrayList<OrderArticle> singleRow;
     private AdapterView.OnItemClickListener mListener;
     private LayoutInflater thisInflator;
-    private Database db = Database.newInstance();
+    Database db = Database.newInstance();
 
-    public EventArticleListAdapter(Context context, ArrayList<Article> aRow)
+    public EventOrderListAdapter(Context context, ArrayList<OrderArticle> aRow)
     {
         this.singleRow = aRow;
         this.thisInflator = (LayoutInflater.from(context));
@@ -50,7 +50,7 @@ public class EventArticleListAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         if(convertView == null)
         {
-            convertView = thisInflator.inflate(R.layout.articleitemview, parent, false);
+            convertView = thisInflator.inflate(R.layout.articleorderview, parent, false);
         }
         else{
             convertView.getTag();
@@ -58,20 +58,20 @@ public class EventArticleListAdapter extends BaseAdapter {
 
         EditText HeadingText = (EditText) convertView.findViewById(R.id.txtProduktName);
         TextView ArticleNr = (TextView) convertView.findViewById(R.id.txtArtikelNr);
-        TextView onStock = (TextView) convertView.findViewById(R.id.txtAufLager);
+        TextView amount = (TextView) convertView.findViewById(R.id.txtGekauft);
         TextView description = (TextView) convertView.findViewById(R.id.txtDesc);
         ImageView typeImage = (ImageView) convertView.findViewById(R.id.imgKategorie);
 
-        Article currentArticle = (Article)getItem(position);
+        OrderArticle currentArticle = (OrderArticle) getItem(position);
 
-        HeadingText.setText(""+currentArticle.getName());
-        ArticleNr.setText("Article Nr: "+String.valueOf(currentArticle.getArtNr()));
-        onStock.setText("on Stock: "+String.valueOf(currentArticle.getOnStock()));
-        description.setText(""+String.valueOf(currentArticle.getDescription()));
+        HeadingText.setText(""+currentArticle.getOrderedArticle().getName());
+        ArticleNr.setText("Article Nr: "+String.valueOf(currentArticle.getOrderedArticle().getArtNr()));
+        amount.setText("amount: "+String.valueOf(currentArticle.getAmount()));
+        description.setText(""+String.valueOf(currentArticle.getOrderedArticle().getDescription()));
 
         Category parentCategory = null;
         try {
-            parentCategory = db.getParentCategory(currentArticle.getArtCategory());
+            parentCategory = db.getParentCategory(currentArticle.getOrderedArticle().getArtCategory());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -89,6 +89,7 @@ public class EventArticleListAdapter extends BaseAdapter {
                 break;
             }
         }
+
         return convertView;
     }
 }

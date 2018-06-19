@@ -57,12 +57,12 @@
             android:textSize="20sp" />
 
         <TextView
-            android:id="@+id/txtAufLager"
+            android:id="@+id/txtGekauft"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5sp"
             android:layout_marginTop="15sp"
-            android:text="on Stock:"
+            android:text="amount:"
             android:textColor="@color/white"
             android:textSize="20sp" />
 

@@ -12,8 +12,8 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.pupil.buum.Data.Customer;
-import com.example.pupil.buum.Data.Database;
+import com.example.pupil.buum.pkgData.User;
+import com.example.pupil.buum.pkgData.Database;
 
 public class KontoActivity extends AppCompatActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener{
 
@@ -63,12 +63,13 @@ public class KontoActivity extends AppCompatActivity implements View.OnClickList
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
-        this.setTitle(db.getCurrCustomer().getUsername());
-        Customer cc = db.getCurrCustomer();
+
+        User cc = db.getCurUser();
+        this.setTitle(db.getCurUser().getUsername());
         txtChangeVorname.setText(""+cc.getFirstName());
         txtChangeNachname.setText(""+cc.getLastName());
         txtOrt.setText(""+cc.getLocation());
-        txtPlz.setText(""+cc.getZipcode());
+        txtPlz.setText(""+cc.getZipCode());
         txtStrasse.setText(""+cc.getAddress());
     }
 
@@ -92,9 +93,7 @@ public class KontoActivity extends AppCompatActivity implements View.OnClickList
                     break;
                 }
                 case R.id.logout:{
-                    Customer c = db.getCurrCustomer();
-                    c.setStatus("logged off");
-                    db.updateCustomer(c);
+                    db.setCurUser(null);
 
                     Intent intent= new Intent(this, LoginActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -133,25 +132,19 @@ public class KontoActivity extends AppCompatActivity implements View.OnClickList
         try{
             switch(view.getId()){
                 case R.id.btnSaveChanges:{
-                    Customer cc = db.getCurrCustomer();
 
-                    if(!txtPW.getText().toString().equals(txtPWWH.getText().toString())){
-                        throw new Exception("'Passwort WH:' und 'Passwort' sind nicht identisch");
-                    }
-                    Customer c = new Customer(cc.getUsername(),txtPW.getText().toString(),txtChangeVorname.getText().toString(),
-                            txtChangeNachname.getText().toString(),txtStrasse.getText().toString(),cc.getEmail(),
-                            txtOrt.getText().toString(),"logged off","customer", cc.getBirthdate(),Integer.parseInt(txtPlz.getText().toString()));
-                    db.updateCustomer(c);
+                    checkInputAndUpdate();
 
-                    Intent intent= new Intent(this, HomepageActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
-                    Toast.makeText(this, "Your data has been changed!",Toast.LENGTH_LONG).show();
+
                     break;
                 }
                 case R.id.btnDeleteAccount:{
+                    User u = db.getCurUser();
+                    u.setStatus("deactive");
+                    db.updateUser(u);
+                    db.setCurUser(null);
+
                     Intent intent= new Intent(this, LoginActivity.class);
-                    db.deleteCurrCustomer();
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                     break;
@@ -161,5 +154,24 @@ public class KontoActivity extends AppCompatActivity implements View.OnClickList
             Toast.makeText(this, "Error: " + ex.getMessage(),Toast.LENGTH_LONG).show();
 
         }
+    }
+
+    private void checkInputAndUpdate() throws Exception {
+
+        User cc = db.getCurUser();
+
+        if(!txtPW.getText().toString().equals(txtPWWH.getText().toString())){
+            throw new Exception("'Passwort WH:' und 'Passwort' sind nicht identisch");
+        }
+        User u = new User(cc.getUsername().toString(),txtPW.getText().toString(),txtChangeVorname.getText().toString(),
+                txtChangeNachname.getText().toString(),cc.getEmail(),
+                txtOrt.getText().toString(),txtStrasse.getText().toString(),
+                "customer", cc.getBirthdate(),Integer.parseInt(txtPlz.getText().toString()),"logged off");
+        db.updateUser(u);
+
+        Intent intent= new Intent(this, HomepageActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        Toast.makeText(this, "Your data has been changed!",Toast.LENGTH_LONG).show();
     }
 }

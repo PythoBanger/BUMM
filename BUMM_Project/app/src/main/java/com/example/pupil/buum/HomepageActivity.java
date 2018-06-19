@@ -10,19 +10,22 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.Toast;
 
-import com.example.pupil.buum.Data.Article;
-import com.example.pupil.buum.Data.Customer;
-import com.example.pupil.buum.Data.Database;
+import com.example.pupil.buum.pkgData.Article;
+import com.example.pupil.buum.pkgData.Database;
 
-public class HomepageActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, NavigationView.OnNavigationItemSelectedListener{
+import java.util.ArrayList;
+
+public class HomepageActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener, NavigationView.OnNavigationItemSelectedListener{
 
     private Database db;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
     private ListView ProductListView;
     private NavigationView navigationView;
+    private SearchView search;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +34,7 @@ public class HomepageActivity extends AppCompatActivity implements AdapterView.O
     try {
         initComponents();
         setListener();
-        insertDummyValues();
+        insertArticlesInList();
     }catch(Exception ex){
         Toast.makeText(this,"Error: "+ex.getMessage(),Toast.LENGTH_LONG).show();
     }
@@ -41,6 +44,7 @@ public class HomepageActivity extends AppCompatActivity implements AdapterView.O
         mDrawerLayout.addDrawerListener(mToggle);
         navigationView.setNavigationItemSelectedListener(this);
         ProductListView.setOnItemClickListener(this);
+        search.setOnQueryTextListener(this);
     }
 
     private void initComponents() {
@@ -48,13 +52,14 @@ public class HomepageActivity extends AppCompatActivity implements AdapterView.O
         mDrawerLayout =(DrawerLayout) findViewById(R.id.drawer);
         navigationView = (NavigationView) findViewById(R.id.navigation);
         ProductListView = (ListView) findViewById(R.id.listView);
+        search = (SearchView) findViewById(R.id.searchLine);
         mToggle= new ActionBarDrawerToggle(this,mDrawerLayout,R.string.open,R.string.close);
         mToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
     }
 
-    private void insertDummyValues() throws Exception {
+    private void insertArticlesInList() throws Exception {
         EventArticleListAdapter itemsAdapter =
                 new EventArticleListAdapter(this, db.getArticles());
 
@@ -80,10 +85,7 @@ public class HomepageActivity extends AppCompatActivity implements AdapterView.O
                     break;
                 }
                 case R.id.logout:{
-                    Customer c = db.getCurrCustomer();
-                    c.setStatus("logged off");
-                    db.updateCustomer(c);
-                    db.setCurrCustomer(null);
+                    db.setCurUser(null);
 
                     Intent intent= new Intent(this, LoginActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -126,11 +128,39 @@ public class HomepageActivity extends AppCompatActivity implements AdapterView.O
             }
 
             Intent intent = new Intent(this,ProduktansichtActivity.class);
-            intent.putExtra("selectedProduct", a.getId());
+            intent.putExtra("selectedProduct", a.getArtNr());
             startActivity(intent);
 
         }catch(Exception ex){
             Toast.makeText(this,"Error caused by selecting spinner item: " + ex.getMessage(),Toast.LENGTH_LONG).show();
         }
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        try {
+            ArrayList<Article> ar= db.filterArticles(query,"Alle Artikel");
+
+            EventArticleListAdapter itemsAdapter =
+                    new EventArticleListAdapter(this, ar);
+
+            ProductListView.setAdapter(itemsAdapter);
+
+        } catch (Exception e) {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_LONG).show();
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        if(newText==null || newText.equals("")){
+            try {
+                insertArticlesInList();
+            } catch (Exception e) {
+                Toast.makeText(this,e.getMessage(),Toast.LENGTH_LONG).show();
+            }
+        }
+    return true;
     }
 }

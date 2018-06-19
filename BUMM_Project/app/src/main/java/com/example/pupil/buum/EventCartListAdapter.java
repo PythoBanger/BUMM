@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
@@ -13,7 +14,10 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.example.pupil.buum.Data.Article;
+import com.example.pupil.buum.pkgData.Article;
+import com.example.pupil.buum.pkgData.Category;
+import com.example.pupil.buum.pkgData.Database;
+import com.example.pupil.buum.pkgData.OrderArticle;
 
 import java.util.ArrayList;
 
@@ -23,10 +27,10 @@ import java.util.ArrayList;
 
 public class EventCartListAdapter extends BaseAdapter {
     private ArrayList<Article> singleRow;
-    private ArrayList<Article> checkedArticle=new ArrayList<>();
+    private ArrayList<OrderArticle> checkedArticle=new ArrayList<>();
     private Article currentArticle;
-    CheckBox isChecked;
-    boolean[] checked=null;
+    CheckBox Checked;
+    Database db = Database.newInstance();
     private Context context;
     private LayoutInflater thisInflator;
 
@@ -51,7 +55,7 @@ public class EventCartListAdapter extends BaseAdapter {
         return position;
     }
 
-    public ArrayList<Article> getCheckedItemList(){
+    public ArrayList<OrderArticle> getCheckedItemList(){
         return checkedArticle;
     }
 
@@ -65,28 +69,66 @@ public class EventCartListAdapter extends BaseAdapter {
             TextView ArticleNr = (TextView) convertView.findViewById(R.id.txtArtikelNr);
             TextView onStock = (TextView) convertView.findViewById(R.id.txtAufLager);
             ImageView typeImage = (ImageView) convertView.findViewById(R.id.imgKategorie);
-            isChecked= (CheckBox) convertView.findViewById(R.id.isChecked);
+            Checked= (CheckBox) convertView.findViewById(R.id.isChecked);
             final Spinner countArticle = (Spinner) convertView.findViewById(R.id.countOrder);
 
             currentArticle = (Article)getItem(position);
 
             HeadingText.setText(currentArticle.getName());
-            ArticleNr.setText(ArticleNr.getText()+" "+String.valueOf(currentArticle.getId()));
+            ArticleNr.setText(ArticleNr.getText()+" "+String.valueOf(currentArticle.getArtNr()));
             onStock.setText(onStock.getText()+" "+String.valueOf(currentArticle.getOnStock()));
             final ArrayAdapter<String> count=fillSpinnerWithAvailableSock(currentArticle,convertView);
             countArticle.setAdapter(count);
 
-            isChecked.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+            Checked.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
 
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if(isChecked){
-                        checkedArticle.add((Article) getItem(position));
+                        System.out.println(""+countArticle.getSelectedItem().toString());
+                        checkedArticle.remove(new OrderArticle((Article) getItem(position),Integer.parseInt(countArticle.getSelectedItem().toString())));
+                        checkedArticle.add(new OrderArticle((Article) getItem(position),Integer.parseInt(countArticle.getSelectedItem().toString())));
                     }
                     else{
-                        checkedArticle.remove(getItem(position));
+                        checkedArticle.remove(new OrderArticle((Article) getItem(position),Integer.parseInt(countArticle.getSelectedItem().toString())));
                     }
                 }
             });
+
+            countArticle.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                   @Override
+                   public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                       if(Checked.isChecked()){
+                           Checked.setSelected(false);
+                       }
+                   }
+
+                   @Override
+                   public void onNothingSelected(AdapterView<?> adapterView) {
+
+                   }
+               }
+            );
+
+            Category parentCategory = null;
+            try {
+                parentCategory = db.getParentCategory(currentArticle.getArtCategory());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            switch (parentCategory.getParentCategory()) {
+                case "Kleidung": {
+                    typeImage.setImageResource(R.drawable.clothes);
+                    break;
+                }
+                case "Technik": {
+                    typeImage.setImageResource(R.drawable.technology);
+                    break;
+                }
+                default: {
+                    break;
+                }
+            }
 
         }
         return convertView;

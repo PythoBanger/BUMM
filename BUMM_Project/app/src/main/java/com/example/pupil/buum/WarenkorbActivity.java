@@ -13,9 +13,10 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.example.pupil.buum.Data.Article;
-import com.example.pupil.buum.Data.Customer;
-import com.example.pupil.buum.Data.Database;
+import com.example.pupil.buum.pkgData.Article;
+import com.example.pupil.buum.pkgData.Database;
+import com.example.pupil.buum.pkgData.Order;
+import com.example.pupil.buum.pkgData.OrderArticle;
 
 import java.util.ArrayList;
 
@@ -34,12 +35,16 @@ public class WarenkorbActivity extends AppCompatActivity implements AdapterView.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_warenkorb);
 
-        initComponents();
-        setListener();
+        try {
+            initComponents();
+            setListener();
 
-
-        this.setTitle("Your Shopping Cart");
-        setUp();
+            this.setTitle("Your Shopping Cart");
+            fillListWithArticles();
+        }
+        catch (Exception ex){
+            Toast.makeText(this,ex.getMessage(),Toast.LENGTH_LONG).show();
+        }
     }
 
     private void initComponents(){
@@ -62,18 +67,9 @@ public class WarenkorbActivity extends AppCompatActivity implements AdapterView.
         remeberedArticleList.setOnItemClickListener(this);
     }
 
-    private void setUp(){
-        ArrayList<Article> dummyList = new ArrayList<>();
-        try {
-            dummyList.add(db.getArticle(2));
-            dummyList.add(db.getArticle(4));
-            dummyList.add(db.getArticle(1));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+    private void fillListWithArticles() throws Exception {
         EventCartListAdapter itemsAdapter =
-                new EventCartListAdapter(this, dummyList);
+                new EventCartListAdapter(this, db.getShoppingListOfUser(db.getCurUser()));
 
         remeberedArticleList.setAdapter(itemsAdapter);
     }
@@ -95,9 +91,7 @@ public class WarenkorbActivity extends AppCompatActivity implements AdapterView.
                 startActivity(new Intent(WarenkorbActivity.this, HomepageActivity.class));
             }
             if(id == R.id.logout){
-                Customer c = db.getCurrCustomer();
-                c.setStatus("logged off");
-                db.updateCustomer(c);
+                db.setCurUser(null);
 
                 Intent intent= new Intent(this, LoginActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -121,18 +115,25 @@ public class WarenkorbActivity extends AppCompatActivity implements AdapterView.
 
     @Override
     public void onClick(View view) {
+        try {
         switch(view.getId()){
             case R.id.btnBuy:{
                 EventCartListAdapter adapter = (EventCartListAdapter) remeberedArticleList.getAdapter();
-                ArrayList<Article> checkedItemList = adapter.getCheckedItemList();
-                String msg= "";
+                ArrayList<OrderArticle> checkedItemList = adapter.getCheckedItemList();
+                Order o = new Order(db.getCurUser());
 
-                for(Article a:checkedItemList){
-                    msg+=""+a.toString()+"\n";
+                for(OrderArticle a:checkedItemList){
+                        o.addArticle(a);
                 }
-                Toast.makeText(this,msg,Toast.LENGTH_LONG).show();
+                db.addOrder(o);
+                fillListWithArticles();
+
+                Toast.makeText(this,o.getAllOrderesArticles().size()+" article/s added!",Toast.LENGTH_LONG).show();
                 break;
             }
+        }
+        } catch (Exception e) {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_LONG).show();
         }
     }
 
@@ -145,7 +146,7 @@ public class WarenkorbActivity extends AppCompatActivity implements AdapterView.
             }
 
             Intent intent = new Intent(this,ProduktansichtActivity.class);
-            intent.putExtra("selectedProduct", a.getId());
+            intent.putExtra("selectedProduct", a.getArtNr());
             startActivity(intent);
 
         }catch(Exception ex){
