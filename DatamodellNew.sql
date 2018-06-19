@@ -3,7 +3,7 @@ DROP TABLE ImageCallery CASCADE CONSTRAINTS;
 DROP TABLE Article CASCADE CONSTRAINTS;
 DROP TABLE Category CASCADE CONSTRAINTS;
 DROP TABLE Rating CASCADE CONSTRAINTS;
-DROP TABLE Notification CASCADE CONSTRAINTS;
+DROP TABLE RatingReport CASCADE CONSTRAINTS;
 DROP TABLE BummOrder CASCADE CONSTRAINTS;
 DROP TABLE ShoppingList CASCADE CONSTRAINTS;
 
@@ -15,7 +15,7 @@ CREATE TABLE BummUser (
   password VARCHAR2(100),
   firstname VARCHAR2(50),
   lastname VARCHAR2(50),
-  email VARCHAR(50),
+  email VARCHAR(50) UNIQUE,
   birthdate DATE,
   location VARCHAR2(50),
   zipcode INTEGER,
@@ -38,7 +38,7 @@ CREATE SEQUENCE seqArticle START WITH 1 INCREMENT BY 1;
 
 CREATE TABLE Article(
   artNr INTEGER,
-  name VARCHAR2(50), /*muss nicht eindeutig sein. es kˆnnen ja mehrere unterschiedliche z.b Iphone4 verkauft werden. */
+  name VARCHAR2(50), /*muss nicht eindeutig sein. es k√∂nnen ja mehrere unterschiedliche z.b Iphone4 verkauft werden. */
   description VARCHAR2(50),
   price FLOAT, 
   onStock INTEGER,
@@ -66,28 +66,26 @@ CREATE TABLE Rating(
   CONSTRAINT fk_Art FOREIGN KEY(artNr) REFERENCES Article(artNr),
   CONSTRAINT check_rating CHECK (ratingValue > 0 AND ratingValue < 6 )
 );
-
-
-CREATE TABLE Notification(
-  typ VARCHAR2(50),
-  sender VARCHAR2(50),
-  receiver VARCHAR2(50),
-  receivDate DATE,
-  CONSTRAINT fk_BU2 FOREIGN KEY(sender) REFERENCES BummUser(username),
-  CONSTRAINT fk_BU3 FOREIGN KEY(receiver) REFERENCES BummUser(username),
-  CONSTRAINT check_typ CHECK (typ is not null and ( typ = 'warning' or typ = 'order send' or typ='comment report' or typ='article no longer for sale')),
-  CONSTRAINT check_senderandrec CHECK (sender != receiver)  
+CREATE TABLE RatingReport(
+  artNr INTEGER,
+  reportedUser VARCHAR2(50),
+  userWhoReported VARCHAR(50),
+  reportDate DATE,
+  CONSTRAINT pk_RatingV8 PRIMARY KEY (artNr,reportedUser,userWhoReported), /*user kann ein rating(kommentar) nur einmal melden*/
+  CONSTRAINT fk_ArV7t FOREIGN KEY(artNr,reportedUser) REFERENCES Rating(artNr,username)
 );
 
 CREATE SEQUENCE seqOrder START WITH 1 INCREMENT BY 1;
-CREATE TABLE BummOrder( /*order not allowed as table*/
-  orderId INTEGER PRIMARY KEY,
+CREATE TABLE BummOrder( 
+  orderId INTEGER,
   username VARCHAR2(50),
   artNr INTEGER,
   amount INTEGER,
-  totalPrice FLOAT, /*per article*/
+  orderDate DATE,
+  CONSTRAINT pk_Ord PRIMARY KEY(orderId,username,artNr),
   CONSTRAINT fk_BU4 FOREIGN KEY(username) REFERENCES BummUser(username),
-  CONSTRAINT fk_Art4 FOREIGN KEY(artNr) REFERENCES Article(artNr)
+  CONSTRAINT fk_Art4 FOREIGN KEY(artNr) REFERENCES Article(artNr),
+  CONSTRAINT check_ammount CHECK (amount > 0) /*u cant have ordered an article with quantityy of 0....*/
 );
 
 CREATE TABLE ShoppingList(
@@ -103,11 +101,11 @@ INSERT INTO BummUser VALUES ('pesso','nim',NULL,NULL,NULL,NULL,NULL,NULL,NULL,'c
 INSERT INTO ShoppingList VALUES('pesso',3);
 INSERT INTO Category VALUES('Alle Artikel',NULL); 
 
-INSERT INTO Category VALUES('Technische Ger‰te','Alle Artikel'); 
+INSERT INTO Category VALUES('Technische Ger√§te','Alle Artikel'); 
 INSERT INTO Category VALUES('Kleidung','Alle Artikel');
 
-INSERT INTO Category VALUES('Handy', 'Technische Ger‰te');
-INSERT INTO Category VALUES('Laptop', 'Technische Ger‰te');
+INSERT INTO Category VALUES('Handy', 'Technische Ger√§te');
+INSERT INTO Category VALUES('Laptop', 'Technische Ger√§te');
 INSERT INTO Category VALUES('Hosen', 'Kleidung');
 INSERT INTO Category VALUES('T-Shirt', 'Kleidung');
 
@@ -136,3 +134,11 @@ create or replace view allCatWithArt as (select c.parentcategory parent, c.curca
       start with curCategory='Alle Artikel' 
    connect by prior curCategory = parentCategory
    order siblings by parentCategory;
+                                
+                            
+                                /*gets lowest children (for add article)*/
+         select level, curCategory,parentCategory from Category where level = (select max(level) from Category start with curCategory='Alle Artikel' connect by prior curCategory = parentCategory)
+      start with curCategory='Alle Artikel' 
+   connect by prior curCategory = parentCategory 
+   order siblings by parentCategory ;
+  

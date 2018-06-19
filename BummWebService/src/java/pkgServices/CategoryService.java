@@ -5,12 +5,15 @@
  */
 package pkgServices;
 
+import com.google.gson.Gson;
 import java.util.Collection;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import pkgData.Category;
 import pkgData.Database;
@@ -26,11 +29,12 @@ public class CategoryService {
     private UriInfo context;
     
     Database db = null;
-
+    Gson gson;
 
     public CategoryService() {
          try{
             db = Database.newInstance();
+            gson = new Gson();
         }catch(Exception ex){
             System.out.println("error while trying to create db.");
         }
@@ -39,10 +43,26 @@ public class CategoryService {
      //gets all categories as a collection
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    public Collection<Category> getAllCategories() throws Exception {   
-        return db.getAllCategories();       
+    public Response getAllCategories() throws Exception {   
+        return Response.ok(gson.toJson(db.getAllCategories())).build();       
     }
     
-    
+    //gets categories which are not parent = lowest children (to add article) 
+    @GET
+    @Path("/lowest")
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response getCategoriesWhichAreNotParents() throws Exception {   
+        System.out.println("h");
+        return Response.ok(gson.toJson(db.getLowestCategories())).build();       
+    }
+
+    //gets categories which are not parent = lowest children (to add article) 
+    @POST
+    @Path("/getParent")
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response getParentOfChild(String childC) throws Exception {   
+        System.out.println("h"+db.getParentCategory(childC));
+        return Response.ok(gson.toJson(db.getParentCategory(childC))).build();       
+    }
 
 }

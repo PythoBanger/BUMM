@@ -6,6 +6,7 @@
 package pkgData;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -19,7 +20,8 @@ public class Rating {
     private LocalDate ratingDate;
     private String ratingComment;
     private int ratingValue;
-
+    private ArrayList<RatingReport> allRatingReports = new ArrayList<>();
+    
     public Rating() {
     }
 
@@ -70,6 +72,14 @@ public class Rating {
 
     public void setRatingValue(int ratingValue) {
         this.ratingValue = ratingValue;
+    }
+
+    public ArrayList<RatingReport> getAllRatingReports() {
+        return allRatingReports;
+    }
+
+    public void setAllRatingReports(ArrayList<RatingReport> allRatingReports) {
+        this.allRatingReports = allRatingReports;
     }
 
     
