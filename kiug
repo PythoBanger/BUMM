@@ -1,58 +1,169 @@
-   private Article orderedArticle;
-    private int amount;
+package com.example.schueler.bumm.pkgMisc;
 
-    public OrderArticle() {
-    }
+import android.os.AsyncTask;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 
-    public OrderArticle(Article orderedArticle, int amount) {
-        this.orderedArticle = orderedArticle;
-        this.amount = amount;
-    }
+import android.os.AsyncTask;
+import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.util.concurrent.*;
 
-    
-    public Article getOrderedArticle() {
-        return orderedArticle;
-    }
+//semiprof daweil wegen ganzen if case etc....
+public class ControllerSync extends AsyncTask<String, Void, String> {
 
-    public void setOrderedArticle(Article orderedArticle) {
-        this.orderedArticle = orderedArticle;
-    }
+    private static final String URI_2ND = "BummWebService/webresources/";
+    private String url_1st;
 
-    public int getAmount() {
-        return amount;
-    }
-
-    public void setAmount(int amount) {
-        this.amount = amount;
+    public ControllerSync(String url) throws Exception {
+        this.url_1st = url;
     }
 
     @Override
-    public String toString() {
-        return "OrderArticle{" + "orderedArticle=" + orderedArticle + ", amount=" + amount + '}';
-    }
+    protected String doInBackground(String... command) {
+        boolean isPut = false, isPost=false,isGetWithHeaders=false, isDelete=false;
 
-    @Override
-    public int hashCode() {
-        int hash = 5;
-        hash = 29 * hash + Objects.hashCode(this.orderedArticle);
-        return hash;
-    }
+        BufferedReader reader = null;
+        BufferedWriter writer = null;
+        String content = null;
+        URL url = null;
+        HttpURLConnection conn=null;
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
+
+        try {
+            switch(command[0]){
+                case "GETALLUSERS":
+                    url = new URL(url_1st + URI_2ND + "users"); //default getAllUsers
+                    break;
+                case "GETUSER":
+                    url = new URL(url_1st + URI_2ND + "users/"+command[1]); //getUser
+                    break;
+                case "LOGINUSER":
+                    url = new URL(url_1st + URI_2ND + "users/login"); //post make login
+                    isPost=true;
+                    break;
+                case "ADDUSER":
+                    url = new URL(url_1st + URI_2ND + "users"); //post add new user (register)
+                    isPost=true;
+                    break;
+                case "UPDATEUSER":
+                    url = new URL(url_1st + URI_2ND + "users"); //put update user
+                    isPut=true;
+                    break;
+                case "GETALLARTICLES":
+                    url = new URL(url_1st + URI_2ND + "articles"); //default getAllArticles
+                    break;
+                case "GETARTICLE":
+                    url = new URL(url_1st + URI_2ND + "articles/"+command[1]); //returns Article
+                    break;
+                case "FILTERARTICLES":
+                    url = new URL(url_1st + URI_2ND + "articles/filter"); //returns filtered articles
+                    isGetWithHeaders=true;
+                    conn = (HttpURLConnection) url.openConnection();
+                    conn.setRequestProperty("name", command[1]);
+                    conn.setRequestProperty("category", command[2]);
+                    break;
+                case "GETRATINGSOFARTICLE":
+                    url = new URL(url_1st + URI_2ND + "ratings/"+command[1]); //returns allRatings of specific Article
+                    break;
+                case "ADDRATING":
+                    url = new URL(url_1st + URI_2ND + "ratings"); //post add rating
+                    isPost=true;
+                    break;
+                case "UPDATERATING":
+                    url = new URL(url_1st + URI_2ND + "ratings"); //put update rating
+                    isPut=true;
+                    break;
+                case "DELETERATING":
+                    url = new URL(url_1st + URI_2ND + "ratings/"+command[1]); //deletes rating
+                    isDelete=true;
+                    break;
+                case "GETALLCATEGORIES":
+                    url = new URL(url_1st + URI_2ND + "categories"); //default getAllCategories
+                    break;
+                case "ADDARTICLETOLIST":
+                    url = new URL(url_1st + URI_2ND + "shoppingList/" + command[2]); //post adds article to specific username
+                    isPost=true;
+                    break;
+                case "DELETEARTICLEFROMLIST":
+                    url = new URL(url_1st + URI_2ND + "shoppingList/" + command[1]); //post semiprof but delete req wont work
+                    isDelete=true;
+                    break;
+                case "GETSHOPPINGLISTOFUSER":
+                    url = new URL(url_1st + URI_2ND + "shoppingList/"+command[1]); //get returns shoppinglist of specific user
+                    break;
+                case "GETALLRATINGSREPORTS":
+                    url = new URL(url_1st + URI_2ND + "ratingReports"); //get returns every rating report
+                    break;
+                case "ADDREPORT":
+                    url = new URL(url_1st + URI_2ND + "ratingReports"); //post adds report to specific rating
+                    isPost=true;
+                    break;
+                case "DELETEREPORT":
+                    url = new URL(url_1st + URI_2ND + "ratingReports/" + command[1]); //deletes every report of rating
+                    isDelete=true;
+                    break;
+                case "ADDORDER":
+                    url = new URL(url_1st + URI_2ND + "orders"); //post adds new order
+                    isPost=true;
+                    break;
+                default: break;
+            }
+
+            if(!isGetWithHeaders){ //without if it will overrride data
+                conn = (HttpURLConnection) url.openConnection();
+            }
+
+            if (isPost) {
+                conn.setRequestMethod("POST"); //semiprof for deleting but delete request dose not works(interpreted ass get)
+                conn.setRequestProperty("Content-Type", "application/json");
+                writer = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream()));
+                writer.write(command[1]); //object in json format
+                writer.flush();
+                writer.close();
+                System.out.println("n"+conn.getContentType());
+                System.out.println("m:"+conn.getResponseCode());
+            }
+            else if(isPut){
+                conn.setRequestMethod("PUT");
+                conn.setRequestProperty("Content-Type", "application/json");
+                writer = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream()));
+                writer.write(command[1]); //object in json format
+                writer.flush();
+                writer.close();
+                conn.getResponseCode();
+            } else if(isDelete){
+                conn.setRequestMethod("DELETE");
+            }
+            if(conn.getResponseCode()==404 || conn.getResponseCode()==400){
+                // get data from server
+                reader = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+
+            }else if(conn.getResponseCode()==200){
+                reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+            }
+
+            StringBuilder sb = new StringBuilder();
+
+            String line = null;
+
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
+            }
+            content = sb.toString();
+            reader.close();
+
+
+            conn.disconnect();
+        } catch (Exception ex) {
+            content=  ex.getMessage();
         }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final OrderArticle other = (OrderArticle) obj;
-        if (!Objects.equals(this.orderedArticle, other.orderedArticle)) {
-            return false;
-        }
-        return true;
+        return content;
+
     }
-    
+}
