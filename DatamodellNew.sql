@@ -1,5 +1,4 @@
 DROP TABLE BummUser CASCADE CONSTRAINTS;
-DROP TABLE ImageCallery CASCADE CONSTRAINTS;
 DROP TABLE Article CASCADE CONSTRAINTS;
 DROP TABLE Category CASCADE CONSTRAINTS;
 DROP TABLE Rating CASCADE CONSTRAINTS;
@@ -46,13 +45,6 @@ CREATE TABLE Article(
   CONSTRAINT pk_article PRIMARY KEY(artNr),
   CONSTRAINT check_onStock CHECK (onStock >-1 ), /*can be smaller than 0 article*/
   CONSTRAINT fk_artCategory FOREIGN KEY(artCategory) REFERENCES Category(curCategory) /*article darf nur in der untersten category sein*/
-);
-
-
-CREATE TABLE ImageCallery(
-  artNr INTEGER,
-  image BLOB,
-  CONSTRAINT fk_gallery FOREIGN KEY(artNr) REFERENCES Article(artNr)
 );
 
 CREATE TABLE Rating(
